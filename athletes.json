@@ -1,0 +1,29 @@
+
+/*TO UPDATE with more realistic values. For testing could be ok*/
+{
+    "elite": {
+      "HR_rest": 40,
+      "HR_max": 190,
+      "FTP": 430,
+      "weight_kg": 70,
+      "fitness_factor": 0.9
+    },
+
+    "runner": {
+      "HR_rest": 50,
+      "HR_max": 180,
+      "FTP": 360,
+      "weight_kg": 74,
+      "fitness_factor": 1.2
+    },
+
+    "amatour": {
+      "HR_rest": 60,
+      "HR_max": 175,
+      "FTP": 280,
+      "weight_kg": 85,
+      "fitness_factor": 1.5
+    }
+  }
+  
+  
