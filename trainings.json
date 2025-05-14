@@ -1,0 +1,49 @@
+{
+    "fartlek": {
+            "name": "Fartlek",
+            "duration": 60,
+            "segments": [
+                {"phase": "warmup", "duration_min": 10, "target_hr_zone": "Z1", "target_power_zone": "Z1"},
+                {"phase": "push", "duration_min": 2, "repeat": 5, "target_hr_zone": "Z4", "target_power_zone": "Z4"},
+                {"phase": "recover", "duration_min": 3, "repeat": 5, "target_hr_zone": "Z2", "target_power_zone": "Z2"},
+                {"phase": "push", "duration_min": 0.5, "repeat": 4, "target_hr_zone": "Z5", "target_power_zone": "Z5"},
+                {"phase": "recover", "duration_min": 1.5, "repeat": 4, "target_hr_zone": "Z1", "target_power_zone": "Z1"},
+                {"phase": "cooldown", "duration_min": 10, "target_hr_zone": "Z1", "target_power_zone": "Z1"}
+            ]
+        },
+    "endurance":{
+            "name": "Endurance",
+            "duration": 100,
+            "segments": [
+                {"phase": "warmup", "duration_min": 10, "target_hr_zone": "Z1", "target_power_zone": "Z1"},
+                {"phase": "push", "duration_min": 75, "target_hr_zone": "Z2", "target_power_zone": "Z2"},
+                {"phase": "push", "duration_min": 15, "target_hr_zone": "Z3", "target_power_zone": "Z3"},
+                {"phase": "cooldown", "duration_min": 5, "target_hr_zone": "Z1", "target_power_zone": "Z1"}
+            ]
+        },
+    "recovery":{
+        "name": "Recovery",
+        "duration": 45,
+        "segments": [
+            {"phase": "warmup", "duration_min": 10, "target_hr_zone": "Z1", "target_power_zone": "Z1"},
+            {"phase": "push", "duration_min": 20, "target_hr_zone": "Z2", "target_power_zone": "Z2"},
+            {"phase": "cooldown", "duration_min": 15, "target_hr_zone": "Z1", "target_power_zone": "Z1"}
+        ]
+    },
+    "progressions":{
+        "name": "Progressions",
+        "duration": 70,
+        "segments": [
+            {"phase": "warmup", "duration_min": 10, "target_hr_zone": "Z1", "target_power_zone": "Z1"},
+            {
+                "phase": "block", "sub_segments": [
+                    {"phase": "push", "duration_min": 6, "target_hr_zone": "Z3", "target_power_zone": "Z3"},
+                    {"phase": "push", "duration_min": 2, "target_hr_zone": "Z4", "target_power_zone": "Z4"}
+                ],
+                "repeat": 3
+            },
+            {"phase": "recover", "duration_min": 3, "repeat": 2, "target_hr_zone": "Z2", "target_power_zone": "Z2"},
+            {"phase": "cooldown", "duration_min": 10, "target_hr_zone": "Z1", "target_power_zone": "Z1"}
+        ]
+    }
+}
