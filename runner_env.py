@@ -2,10 +2,11 @@ import random
 import json
 
 class RunnerEnv:
-    def __init__(self, athlete_profile, training_plan):
+    def __init__(self, athlete_profile, training_plan, verbose=True):
         self.athlete = athlete_profile
         self.training = training_plan
         self.reset()
+        self.verbose = verbose
 
     # Initialize the environment resetting the state of the athlete
     def reset(self):
@@ -139,6 +140,8 @@ class RunnerEnv:
         return {"Z1": 1, "Z2": 2, "Z3": 3, "Z4": 4, "Z5": 5}[zone]
     
     def log_state(self, action, reward, done):
+        if not self.verbose:
+            return
         print(f"Minute: {self.minute} | Action: {action.upper()} | Reward: {reward} | Done: {done}")
         print(f"➤ Phase : {self.state['phase_label']} | Target HR Zone: {self.state['target_hr_zone']} | Target Power Zone: {self.state['target_power_zone']}")
         print(f"➤ Actual State : {self.state['HR_zone']} | HR Zone: {self.state['HR_zone']} | Power Zone: {self.state['power_zone']} | Fatigue Level: {self.state['fatigue_level']} | Slope Level: {self.state['slope_level']}")
