@@ -7,6 +7,8 @@ class RunnerEnv:
         self.training = training_plan
         self.tracking = track_data or [] 
         self.verbose = verbose
+        # Ricava la tipologia dell'allenamento dal campo "name" e la converte in minuscolo
+        self.training_type = self.training.get("name", "generic").lower()
         self._get_bio_parameters()
         self.reset()
 
@@ -20,6 +22,7 @@ class RunnerEnv:
     def reset(self):
         self.second = 0
         self.fatigue_score = 0.0
+        self.hr_float = 1.0  # HR simulata come valore continuo
         self.expanded_plan = self._expand_training_segments(self.training["segments"])
         self.state = {
             "HR_zone": "Z1",
@@ -53,20 +56,42 @@ class RunnerEnv:
         self.state["power_zone"] = zones[i]
 
     def _update_hr_zone(self, action):
-        zones = ["Z1", "Z2", "Z3", "Z4", "Z5"]
-        i = zones.index(self.state["HR_zone"])
-        slope_mod = {"flat": 0, "uphill": 1, "steep_uphill": 2, "downhill": -1, "steep_down": -2}
-        delta = {"accelerate": 1, "keep going": 0, "slow down": -1}[action] + slope_mod.get(self.state["slope_level"], 0)
-        i = max(0, min(4, i + delta))
-        self.state["HR_zone"] = zones[i]
+        target = self._get_zone(self.state["power_zone"])
+        delta = (target - self.hr_float) * 0.2  
+        self.hr_float = max(1.0, min(5.0, self.hr_float + delta))
+        self.state["HR_zone"] = f"Z{round(self.hr_float)}"
 
     def _update_fatigue(self, action):
-        base_fatigue = {"Z1": 0.1, "Z2": 0.3, "Z3": 0.5, "Z4": 0.7, "Z5": 1.0}[self.state["HR_zone"]]
-        action_mod = {"accelerate": 0.2, "keep going": 0.0, "slow down": -0.1}[action]
-        noise = random.uniform(-0.05, 0.05)
-        self.fatigue_score += base_fatigue + action_mod + noise
+        hr_level = self._get_zone(self.state["HR_zone"])
+        fatigue_gain = {
+            1: 0.01,
+            2: 0.05,
+            3: 0.12,
+            4: 0.3,
+            5: 0.5
+        }[hr_level]
+
+        if self.state["phase_label"] == "push":
+            fatigue_gain *= 1.2
+        elif self.state["phase_label"] in ["recover", "cooldown"]:
+            fatigue_gain *= 0.5
+
+        if hr_level <= 2 and action == "slow down":
+            fatigue_gain -= 0.1
+
+        modifier = {
+            "fartlek": 1.1,
+            "interval": 1.0,
+            "progressions": 0.9,
+            "endurance": 0.8,
+            "recovery": 0.7
+        }.get(self.training_type, 1.0)
+
+        fatigue_gain *= modifier
+        self.fatigue_score += fatigue_gain + random.uniform(-0.02, 0.02)
         self.fatigue_score *= self.fitness_factor
         self.fatigue_score = max(0, min(10, self.fatigue_score))
+
         if self.fatigue_score <= 3:
             level = "low"
         elif self.fatigue_score <= 7:
@@ -146,7 +171,6 @@ class RunnerEnv:
         print(f"➤ Phase : {self.state['phase_label']} | Target HR Zone: {self.state['target_hr_zone']} | Target Power Zone: {self.state['target_power_zone']}")
         print(f"➤ Actual State : HR Zone: {self.state['HR_zone']} | Power Zone: {self.state['power_zone']} | Fatigue Level: {self.state['fatigue_level']} | Slope Level: {self.state['slope_level']}")
         print("--------------------------------------------------")
-
 
 def load_json(path):
     with open(path, 'r') as f:
