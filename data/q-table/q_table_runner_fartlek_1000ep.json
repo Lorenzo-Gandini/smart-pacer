@@ -1,0 +1,187 @@
+{
+  "('Z1', 'Z1', 'low', 'warmup', 'Z1', 'Z1')": {
+    "slow down": 6.246951996231899,
+    "keep going": 5.779421274012318,
+    "accelerate": 3.3705625125318157
+  },
+  "('Z2', 'Z2', 'low', 'warmup', 'Z1', 'Z1')": {
+    "slow down": 7.092146838985677,
+    "keep going": 0.8718257611222193,
+    "accelerate": -0.2
+  },
+  "('Z1', 'Z1', 'low', 'push', 'Z4', 'Z4')": {
+    "slow down": -9.45649238990296,
+    "keep going": -9.181471211340408,
+    "accelerate": -5.331079840688117
+  },
+  "('Z1', 'Z1', 'medium', 'push', 'Z4', 'Z4')": {
+    "slow down": -11.180321024745314,
+    "keep going": -11.001826018835217,
+    "accelerate": -9.68005507334598
+  },
+  "('Z2', 'Z2', 'medium', 'push', 'Z4', 'Z4')": {
+    "slow down": -8.910973537674419,
+    "keep going": -8.332949486846472,
+    "accelerate": -6.748622002211906
+  },
+  "('Z1', 'Z1', 'high', 'push', 'Z4', 'Z4')": {
+    "slow down": -11.51814589852208,
+    "keep going": -11.414341460287584,
+    "accelerate": -11.483202599514156
+  },
+  "('Z2', 'Z2', 'high', 'push', 'Z4', 'Z4')": {
+    "slow down": -9.862616960623122,
+    "keep going": -9.458727161003194,
+    "accelerate": -9.342027496858403
+  },
+  "('Z1', 'Z1', 'high', 'recover', 'Z2', 'Z2')": {
+    "slow down": -3.4343839609927884,
+    "keep going": -3.1971886233684366,
+    "accelerate": -2.8955344094509563
+  },
+  "('Z2', 'Z2', 'high', 'recover', 'Z2', 'Z2')": {
+    "slow down": -5.659472941158755,
+    "keep going": -1.9648966558693088,
+    "accelerate": -5.838081105893693
+  },
+  "('Z3', 'Z3', 'high', 'recover', 'Z2', 'Z2')": {
+    "slow down": -1.867338459273315,
+    "keep going": -3.575643424736648,
+    "accelerate": -6.328421721413134
+  },
+  "('Z4', 'Z4', 'high', 'recover', 'Z2', 'Z2')": {
+    "slow down": -4.783681579068856,
+    "keep going": -5.397063509612194,
+    "accelerate": -8.460295805313146
+  },
+  "('Z1', 'Z1', 'high', 'recover', 'Z1', 'Z1')": {
+    "slow down": 0.0,
+    "keep going": -0.36575220252627094,
+    "accelerate": -3.76740105198784
+  },
+  "('Z1', 'Z1', 'high', 'cooldown', 'Z1', 'Z1')": {
+    "slow down": 0.0,
+    "keep going": -0.9999999985249581,
+    "accelerate": -3.999999600824447
+  },
+  "('Z2', 'Z2', 'low', 'push', 'Z4', 'Z4')": {
+    "slow down": -4.577956414792972,
+    "keep going": -4.505883548661044,
+    "accelerate": -3.595623926794793
+  },
+  "('Z3', 'Z3', 'medium', 'push', 'Z4', 'Z4')": {
+    "slow down": -7.193454795242908,
+    "keep going": -6.656569587022476,
+    "accelerate": -5.440841149335583
+  },
+  "('Z2', 'Z2', 'high', 'recover', 'Z1', 'Z1')": {
+    "slow down": 0.0,
+    "keep going": -1.5651093,
+    "accelerate": -4.226497062074099
+  },
+  "('Z2', 'Z2', 'high', 'cooldown', 'Z1', 'Z1')": {
+    "slow down": 0.0,
+    "keep going": -1.8742360000000002,
+    "accelerate": -3.78581968897775
+  },
+  "('Z3', 'Z3', 'high', 'recover', 'Z1', 'Z1')": {
+    "slow down": -2.31369622635117,
+    "keep going": -2.37019925149875,
+    "accelerate": -2.5862415915000003
+  },
+  "('Z1', 'Z1', 'medium', 'warmup', 'Z1', 'Z1')": {
+    "slow down": -4.942502889335504,
+    "keep going": -4.846594615184378,
+    "accelerate": -4.215487688787699
+  },
+  "('Z3', 'Z3', 'high', 'push', 'Z4', 'Z4')": {
+    "slow down": -7.801123899313104,
+    "keep going": -7.678970651165632,
+    "accelerate": -6.794572199472357
+  },
+  "('Z3', 'Z3', 'low', 'push', 'Z4', 'Z4')": {
+    "slow down": -3.386105634533734,
+    "keep going": -3.432891171883174,
+    "accelerate": -2.7615328362275675
+  },
+  "('Z3', 'Z3', 'high', 'cooldown', 'Z1', 'Z1')": {
+    "slow down": -2.152711390557,
+    "keep going": -2.4751246878125,
+    "accelerate": -2.3990023752303253
+  },
+  "('Z4', 'Z4', 'high', 'cooldown', 'Z1', 'Z1')": {
+    "slow down": -3.06234503390305,
+    "keep going": -2.9627490643734378,
+    "accelerate": -2.9315843143734375
+  },
+  "('Z4', 'Z4', 'medium', 'push', 'Z4', 'Z4')": {
+    "slow down": -6.995893031808089,
+    "keep going": -4.690192302078867,
+    "accelerate": -6.137764269831358
+  },
+  "('Z4', 'Z4', 'high', 'push', 'Z4', 'Z4')": {
+    "slow down": -8.722797490735877,
+    "keep going": -7.415001803602623,
+    "accelerate": -9.536295213625857
+  },
+  "('Z5', 'Z5', 'high', 'push', 'Z4', 'Z4')": {
+    "slow down": -7.129579808653149,
+    "keep going": -7.288457387442096,
+    "accelerate": -7.403342807712341
+  },
+  "('Z5', 'Z5', 'high', 'recover', 'Z2', 'Z2')": {
+    "slow down": -7.901379515139654,
+    "keep going": -7.963100907379799,
+    "accelerate": -8.09725185045914
+  },
+  "('Z4', 'Z4', 'high', 'recover', 'Z1', 'Z1')": {
+    "slow down": -1.409355860635,
+    "keep going": -1.4031246190625,
+    "accelerate": -1.393475
+  },
+  "('Z5', 'Z5', 'high', 'cooldown', 'Z1', 'Z1')": {
+    "slow down": -3.1586274566992816,
+    "keep going": -2.9627490643734378,
+    "accelerate": -2.9627490643734378
+  },
+  "('Z4', 'Z4', 'low', 'push', 'Z4', 'Z4')": {
+    "slow down": -3.1117983161394505,
+    "keep going": -2.802318905378442,
+    "accelerate": -2.924850441036112
+  },
+  "('Z3', 'Z3', 'low', 'warmup', 'Z1', 'Z1')": {
+    "slow down": 0.2901925433225102,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z5', 'Z5', 'medium', 'push', 'Z4', 'Z4')": {
+    "slow down": -4.593857866411849,
+    "keep going": -4.616832903324728,
+    "accelerate": -4.130288526331609
+  },
+  "('Z2', 'Z2', 'medium', 'warmup', 'Z1', 'Z1')": {
+    "slow down": -1.9993743254607468,
+    "keep going": -2.912385386419434,
+    "accelerate": -2.0000931985675194
+  },
+  "('Z5', 'Z5', 'high', 'recover', 'Z1', 'Z1')": {
+    "slow down": -0.47581,
+    "keep going": -0.7292699625566876,
+    "accelerate": 0.0
+  },
+  "('Z2', 'Z2', 'high', 'warmup', 'Z1', 'Z1')": {
+    "slow down": -2.7086096092006198,
+    "keep going": -2.429390698237146,
+    "accelerate": -2.562089512184525
+  },
+  "('Z3', 'Z3', 'medium', 'warmup', 'Z1', 'Z1')": {
+    "slow down": -0.42016584183724004,
+    "keep going": -0.4,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z3', 'high', 'warmup', 'Z1', 'Z1')": {
+    "slow down": -1.2878334322326488,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  }
+}
