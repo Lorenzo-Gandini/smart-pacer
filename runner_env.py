@@ -7,7 +7,6 @@ class RunnerEnv:
         self.training = training_plan
         self.tracking = track_data or [] 
         self.verbose = verbose
-        # Ricava la tipologia dell'allenamento dal campo "name" e la converte in minuscolo
         self.training_type = self.training.get("name", "generic").lower()
         self._get_bio_parameters()
         self.reset()
@@ -22,7 +21,8 @@ class RunnerEnv:
     def reset(self):
         self.second = 0
         self.fatigue_score = 0.0
-        self.hr_float = 1.0  # HR simulata come valore continuo
+        self.time_in_high_zones = 0
+        self.hr_float = 1.0
         self.expanded_plan = self._expand_training_segments(self.training["segments"])
         self.state = {
             "HR_zone": "Z1",
@@ -57,12 +57,14 @@ class RunnerEnv:
 
     def _update_hr_zone(self, action):
         target = self._get_zone(self.state["power_zone"])
-        delta = (target - self.hr_float) * 0.2  
+        delta = (target - self.hr_float) * 0.2
         self.hr_float = max(1.0, min(5.0, self.hr_float + delta))
         self.state["HR_zone"] = f"Z{round(self.hr_float)}"
 
     def _update_fatigue(self, action):
         hr_level = self._get_zone(self.state["HR_zone"])
+        power_level = self._get_zone(self.state["power_zone"])
+
         fatigue_gain = {
             1: 0.01,
             2: 0.05,
@@ -78,6 +80,17 @@ class RunnerEnv:
 
         if hr_level <= 2 and action == "slow down":
             fatigue_gain -= 0.1
+
+        # Aggiungi accumulo da tempo in Z4-Z5
+        if hr_level >= 4:
+            self.time_in_high_zones += 1
+        else:
+            self.time_in_high_zones = max(0, self.time_in_high_zones - 1)
+        fatigue_gain += 0.01 * self.time_in_high_zones
+
+        # Effetto combinato HR + Power alti
+        if hr_level >= 4 and power_level >= 4:
+            fatigue_gain *= 1.3
 
         modifier = {
             "fartlek": 1.1,
@@ -134,30 +147,48 @@ class RunnerEnv:
         return expanded
 
     def _compute_reward(self, action):
-        reward = 0
-        if self.state["HR_zone"] == self.state["target_hr_zone"]:
-            reward += 1
-        elif abs(self._get_zone(self.state["HR_zone"]) - self._get_zone(self.state["target_hr_zone"])) == 1:
-            reward -= 0.5
-        else:
-            reward -= 1
+        reward = 0.0
+        hr_zone = self._get_zone(self.state["HR_zone"])
+        power_zone = self._get_zone(self.state["power_zone"])
+        target_hr = self._get_zone(self.state["target_hr_zone"])
+        target_power = self._get_zone(self.state["target_power_zone"])
 
-        if self.state["power_zone"] == self.state["target_power_zone"]:
-            reward += 1
-        elif abs(self._get_zone(self.state["power_zone"]) - self._get_zone(self.state["target_power_zone"])) == 1:
-            reward -= 0.5
-        else:
-            reward -= 1
+        hr_diff = abs(hr_zone - target_hr)
+        power_diff = abs(power_zone - target_power)
 
-        if self.state["fatigue_level"] == "high":
-            reward -= 2
-        elif self.state["fatigue_level"] == "medium":
-            reward -= 0.5
+        hr_reward = {0: +1.5, 1: -0.5, 2: -1.5, 3: -3.0, 4: -4.0}.get(hr_diff, -4.0)
+        power_reward = {0: +1.5, 1: -0.5, 2: -1.5, 3: -3.0, 4: -4.0}.get(power_diff, -4.0)
 
-        if self.state["phase_label"] == "recover" and action == "accelerate":
-            reward -= 1
-        elif self.state["phase_label"] == "cooldown" and action != "slow down":
-            reward -= 1
+        reward += hr_reward + power_reward
+
+        # Penalità fatica
+        fatigue_penalty = {"low": 0.0, "medium": -1.0, "high": -3.0}[self.state["fatigue_level"]]
+        reward += fatigue_penalty
+
+        # Penalità/bonus fase
+        phase = self.state["phase_label"]
+        if phase == "recover" and action == "accelerate":
+            reward -= 2.0
+        elif phase == "cooldown" and action != "slow down":
+            reward -= 1.5
+        elif phase == "push" and action == "accelerate":
+            reward += 0.5
+        elif phase == "warmup" and hr_zone >= 4:
+            reward -= 1.0
+
+        # Bonus stabilità
+        if hr_diff == 0 and power_diff == 0:
+            reward += 0.5
+
+        # Penalità per gap HR vs Power
+        if abs(hr_zone - power_zone) >= 2:
+            reward -= 1.0
+
+        # Bonus per direzione coerente
+        if hr_zone < target_hr and action == "accelerate":
+            reward += 0.5
+        elif hr_zone > target_hr and action == "slow down":
+            reward += 0.5
 
         return reward
 
@@ -167,7 +198,7 @@ class RunnerEnv:
     def _log_state(self, action, reward, done):
         if not self.verbose:
             return
-        print(f"Second: {self.second} | Action: {action.upper()} | Reward: {reward} | Done: {done}")
+        print(f"Second: {self.second} | Action: {action.upper()} | Reward: {reward:.2f} | Done: {done}")
         print(f"➤ Phase : {self.state['phase_label']} | Target HR Zone: {self.state['target_hr_zone']} | Target Power Zone: {self.state['target_power_zone']}")
         print(f"➤ Actual State : HR Zone: {self.state['HR_zone']} | Power Zone: {self.state['power_zone']} | Fatigue Level: {self.state['fatigue_level']} | Slope Level: {self.state['slope_level']}")
         print("--------------------------------------------------")
