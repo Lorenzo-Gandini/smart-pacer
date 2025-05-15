@@ -1,44 +1,24 @@
-from runner_env import RunnerEnv
-import os
-import sys
-import json
-import random
+from runner_env import RunnerEnv, load_json
 
-if __name__ == "__main__":
-        
-    # Caricamento JSON
-    with open("athletes.json") as f:
-        athletes = json.load(f)
+athletes = load_json("athletes.json")
+trainings = load_json("trainings.json")
+track = load_json("track_data.json")
 
-    with open("trainings.json") as f:
-        trainings = json.load(f)
+athlete = athletes["elite"]
+training = trainings["progressions"]
 
+# Inizializza ambiente con tracciato
+env = RunnerEnv(athlete, training, track_data=track, verbose=True)
 
-    athlete = athletes["runner"]
-    training = trainings["fartlek"]
+state = env.reset()
+done = False
+total_reward = 0
 
-    env = RunnerEnv(athlete, training)
+actions = ['slow down', 'keep going', 'accelerate']  # logica semplificata: scegli sempre 'mantieni'
 
-    state = env.reset()
-    total_reward = 0
+while not done:
+    action = 'keep going'  # puoi cambiare questa logica con qualcosa di più smart
+    state, reward, done = env.step(action)
+    total_reward += reward
 
-    print("TRAINING SESSION :")
-    print("Initial state:", state)
-
-    for step_n in range(10):
-        step_n, r, done = env.step("keep going")
-        total_reward += r
-
-    print("\n🔹After 10 steps: ", env.state, "\nTotal reward : ", total_reward)
-
-    for step_n in range(15):
-        action = "accelerate" if step_n%3==0 else "slow down"
-        step_n, r, done = env.step(action)
-        total_reward += r
-
-    print("\n🔹After 15 steps: ", env.state, "\nTotal reward : ", total_reward)
-
-    for step_n in range(30):
-        step_n, r, done = env.step("keep going")
-        total_reward += r
-    print("Total reward: ", total_reward)
+print(f"\n🏁 Reward totale accumulato: {total_reward:.2f}")
