@@ -6,7 +6,16 @@ class RunnerEnv:
         self.athlete = athlete_profile
         self.training = training_plan
         self.verbose = verbose
+        self._get_bio_parameters()
         self.reset()
+
+    def _get_bio_parameters(self):
+        self.fitness_factor = self.athlete["fitness_factor"]
+        self.hr_rest = self.athlete["HR_rest"]
+        self.hr_max = self.athlete["HR_max"]
+        self.ftp = self.athlete["FTP"]
+        self.weight = self.athlete["weight_kg"]
+        
 
     # Initialize the environment resetting the state of the athlete
     def reset(self):
@@ -70,6 +79,7 @@ class RunnerEnv:
         action_mod = {"accelerate": 0.2, "keep going": 0.0, "slow down": -0.1}[action]
         noise = random.uniform(-0.05, 0.05)
         self.fatigue_score += base_fatigue + action_mod + noise
+        self.fatigue_score = self.fatigue_score * self.fitness_factor
         self.fatigue_score = max(0, min(10, self.fatigue_score))
         if self.fatigue_score <= 3:
             level = "low"
