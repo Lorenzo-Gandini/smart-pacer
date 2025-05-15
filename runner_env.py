@@ -98,7 +98,9 @@ class RunnerEnv:
             self.state["phase_label"] = current["phase"]
             self.state["target_hr_zone"] = current["target_hr_zone"]
             self.state["target_power_zone"] = current["target_power_zone"]
-
+        else:
+            self.state["segment_index"] = self.minute
+            
     def _expand_training_segments(self, segments):
         expanded = []
         for segment in segments:
