@@ -25,8 +25,6 @@ if __name__ == "__main__":
     print("TRAINING SESSION :")
     print("Initial state:", state)
 
-
-
     for step_n in range(10):
         step_n, r, done = env.step("keep going")
         total_reward += r

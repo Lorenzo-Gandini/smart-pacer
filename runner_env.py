@@ -5,8 +5,8 @@ class RunnerEnv:
     def __init__(self, athlete_profile, training_plan, verbose=True):
         self.athlete = athlete_profile
         self.training = training_plan
-        self.reset()
         self.verbose = verbose
+        self.reset()
 
     # Initialize the environment resetting the state of the athlete
     def reset(self):
@@ -36,13 +36,15 @@ class RunnerEnv:
         self._update_fatigue(action)
         self._advance_segment()
         reward = self._compute_reward(action)
-        done = self.minute >= self.training["duration"]
 
-        self.log_state(action, reward, done)
+        done = self.minute >= self.training["duration"] #the training is over when the duration is reached
+        
+        self._log_state(action, reward, done)
 
         return self.state.copy(), reward, done
 
-    
+    #TO DO : update the methods that updates the hr zones, power zones and fatigue. Up to now they are not so realistic.
+
     def _update_power_zone(self, action):
         ''' Update the power zone based on the action taken. '''
         zones = ["Z1", "Z2", "Z3", "Z4", "Z5"]
@@ -139,7 +141,7 @@ class RunnerEnv:
         ''' Get the level of the zone. '''
         return {"Z1": 1, "Z2": 2, "Z3": 3, "Z4": 4, "Z5": 5}[zone]
     
-    def log_state(self, action, reward, done):
+    def _log_state(self, action, reward, done):
         if not self.verbose:
             return
         print(f"Minute: {self.minute} | Action: {action.upper()} | Reward: {reward} | Done: {done}")
