@@ -1,2 +1,5 @@
 \smart-pacer_env
 \random_files
+data/q-table
+data/history-qtraining
+data/figures
