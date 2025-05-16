@@ -92,11 +92,17 @@ class RunnerEnv:
         if hr_level >= 4 and power_level >= 4:
             fatigue_gain *= 1.3
 
+        # Scaling fisiologico: VO2/FTP → più FTP = meno fatica
+        ftp_per_kg = self.ftp / self.weight
+        ftp_factor = max(0.3, min(1.8, 1.0 / ftp_per_kg))  
+        fatigue_gain *= ftp_factor
+
+        # Modificatore da tipo allenamento
         modifier = {
-            "fartlek": 1.1,
-            "interval": 1.0,
-            "progressions": 0.9,
-            "endurance": 0.8,
+            "fartlek": 1.3,
+            "interval": 1.2,
+            "progressions": 1.1,
+            "endurance": 1.0,
             "recovery": 0.7
         }.get(self.training_type, 1.0)
 
@@ -112,6 +118,7 @@ class RunnerEnv:
         else:
             level = "high"
         self.state["fatigue_level"] = level
+
 
     def _advance_segment(self):
         self.second += 1
@@ -146,7 +153,7 @@ class RunnerEnv:
                         expanded.append(segment)
         return expanded
 
-    def _compute_reward(self, action):
+    def _compute_reward(self, action): 
         reward = 0.0
         hr_zone = self._get_zone(self.state["HR_zone"])
         power_zone = self._get_zone(self.state["power_zone"])
@@ -164,6 +171,12 @@ class RunnerEnv:
         # Penalità fatica
         fatigue_penalty = {"low": 0.0, "medium": -1.0, "high": -3.0}[self.state["fatigue_level"]]
         reward += fatigue_penalty
+
+        # Penalità extra se spingi troppo con fatica alta e basso FTP
+        if self.state["fatigue_level"] == "high" and action == "accelerate":
+            ftp_per_kg = self.ftp / self.weight
+            if ftp_per_kg < 3.0:  # soglia ragionevole per atleti poco allenati
+                reward -= 2.0
 
         # Penalità/bonus fase
         phase = self.state["phase_label"]
