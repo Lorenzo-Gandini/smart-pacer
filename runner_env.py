@@ -1,12 +1,15 @@
 import random
 import json
 
+ACTIONS = ['slow down', 'keep going', 'accelerate']
+
 class RunnerEnv:
     def __init__(self, athlete_profile, training_plan, track_data=None, verbose=True):
         self.athlete = athlete_profile
         self.training = training_plan
         self.tracking = track_data or [] 
         self.verbose = verbose
+        self.actions = ACTIONS
         self.training_type = self.training.get("name", "generic").lower()
         self._get_bio_parameters()
         self.reset()
