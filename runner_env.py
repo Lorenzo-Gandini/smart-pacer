@@ -94,7 +94,7 @@ class RunnerEnv:
 
         # Scaling fisiologico: VO2/FTP → più FTP = meno fatica
         ftp_per_kg = self.ftp / self.weight
-        ftp_factor = max(0.3, min(1.8, 1.0 / ftp_per_kg))  
+        ftp_factor = 1.0 / max(0.1, ftp_per_kg)
         fatigue_gain *= ftp_factor
 
         # Modificatore da tipo allenamento
@@ -153,57 +153,124 @@ class RunnerEnv:
                         expanded.append(segment)
         return expanded
 
-    def _compute_reward(self, action): 
-        reward = 0.0
+    def _compute_reward(self, action):
+        # Get numerical values for zones
         hr_zone = self._get_zone(self.state["HR_zone"])
         power_zone = self._get_zone(self.state["power_zone"])
         target_hr = self._get_zone(self.state["target_hr_zone"])
         target_power = self._get_zone(self.state["target_power_zone"])
+        phase = self.state["phase_label"]
+        fatigue = self.state["fatigue_level"]
+        
+        # Determine athlete level based on FTP/kg
+        ftp_per_kg = self.ftp / self.weight
+        if ftp_per_kg > 5.5:
+            athlete_level = "elite"
+        elif ftp_per_kg > 4.0:
+            athlete_level = "runner"
+        else:
+            athlete_level = "amatour"
 
+        # 1. Zone Matching Reward (weighted 40% HR, 40% Power)
         hr_diff = abs(hr_zone - target_hr)
         power_diff = abs(power_zone - target_power)
+        
+        hr_reward = {
+            0: 2.0,   # Perfect match
+            1: 0.5,    # Slightly off
+            2: -1.0,   # Moderate deviation
+            3: -2.5,   # Significant deviation
+            4: -4.0    # Extreme deviation
+        }.get(hr_diff, -4.0)
+        
+        power_reward = {
+            0: 2.0,
+            1: 0.5,
+            2: -1.0,
+            3: -2.5,
+            4: -4.0
+        }.get(power_diff, -4.0)
 
-        hr_reward = {0: +1.5, 1: -0.5, 2: -1.5, 3: -3.0, 4: -4.0}.get(hr_diff, -4.0)
-        power_reward = {0: +1.5, 1: -0.5, 2: -1.5, 3: -3.0, 4: -4.0}.get(power_diff, -4.0)
+        # 2. Fatigue Management (scaled by athlete level)
+        fatigue_thresholds = {
+            "elite": {"low": 5.0, "medium": 7.0},
+            "runner": {"low": 4.0, "medium": 6.0},
+            "amatour": {"low": 3.0, "medium": 5.0}
+        }
+        
+        if self.fatigue_score <= fatigue_thresholds[athlete_level]["low"]:
+            fatigue_penalty = 0.0
+        elif self.fatigue_score <= fatigue_thresholds[athlete_level]["medium"]:
+            fatigue_penalty = -1.0 * (self.fatigue_score - fatigue_thresholds[athlete_level]["low"])
+        else:
+            fatigue_penalty = -2.0 * (self.fatigue_score - fatigue_thresholds[athlete_level]["medium"])
 
-        reward += hr_reward + power_reward
+        # 3. Physiological Coherence (HR-Power relationship)
+        zone_diff = abs(hr_zone - power_zone)
+        expected_diff = {
+            "elite": 0.5,
+            "runner": 1.0,
+            "amatour": 1.5
+        }[athlete_level]
+        
+        if zone_diff <= expected_diff:
+            coherence_bonus = 1.0
+        else:
+            coherence_bonus = -1.0 * (zone_diff - expected_diff)
 
-        # Penalità fatica
-        fatigue_penalty = {"low": 0.0, "medium": -1.0, "high": -3.0}[self.state["fatigue_level"]]
-        reward += fatigue_penalty
+        # 4. Training Phase Adaptation
+        phase_bonus = 0.0
+        if phase == "warmup":
+            if hr_zone > target_hr:
+                phase_bonus = -2.0
+            elif action == "accelerate" and hr_zone < target_hr:
+                phase_bonus = 0.5
+        elif phase == "push":
+            if action == "accelerate" and hr_zone < target_hr:
+                phase_bonus = 1.0
+            elif action == "slow down" and hr_zone > target_hr:
+                phase_bonus = 0.5
+        elif phase in ["recover", "cooldown"]:
+            if action == "slow down" and hr_zone > target_hr:
+                phase_bonus = 1.0
+            elif action == "accelerate":
+                phase_bonus = -2.0
 
-        # Penalità extra se spingi troppo con fatica alta e basso FTP
-        if self.state["fatigue_level"] == "high" and action == "accelerate":
-            ftp_per_kg = self.ftp / self.weight
-            if ftp_per_kg < 3.0:  # soglia ragionevole per atleti poco allenati
-                reward -= 2.0
+        # 5. Athlete Capacity Scaling
+        zone_penalty = {
+            1: 0.0,
+            2: 0.0,
+            3: 0.5,
+            4: 1.5,
+            5: 3.0
+        }[hr_zone]
+        
+        capacity_factor = min(1.0, ftp_per_kg / 6.0)  # 6.0 w/kg is elite threshold
+        capacity_adjustment = -zone_penalty * (1.0 - capacity_factor)
 
-        # Penalità/bonus fase
-        phase = self.state["phase_label"]
-        if phase == "recover" and action == "accelerate":
-            reward -= 2.0
-        elif phase == "cooldown" and action != "slow down":
-            reward -= 1.5
-        elif phase == "push" and action == "accelerate":
-            reward += 0.5
-        elif phase == "warmup" and hr_zone >= 4:
-            reward -= 1.0
+        # Combine all components with weights
+        total_reward = (
+            0.4 * hr_reward +
+            0.4 * power_reward +
+            0.3 * coherence_bonus +
+            0.2 * phase_bonus +
+            fatigue_penalty +
+            capacity_adjustment
+        )
 
-        # Bonus stabilità
-        if hr_diff == 0 and power_diff == 0:
-            reward += 0.5
+        # Add small randomness to avoid perfect patterns
+        total_reward += random.uniform(-0.1, 0.1)
 
-        # Penalità per gap HR vs Power
-        if abs(hr_zone - power_zone) >= 2:
-            reward -= 1.0
+        # Special cases
+        # Penalize extreme overexertion for amateurs
+        if athlete_level == "amatour" and hr_zone >= 4 and power_zone >= 4:
+            total_reward -= 2.0
+        
+        # Bonus for elite maintaining high zones appropriately
+        if athlete_level == "elite" and hr_zone == target_hr and power_zone == target_power and target_hr >= 4:
+            total_reward += 1.0
 
-        # Bonus per direzione coerente
-        if hr_zone < target_hr and action == "accelerate":
-            reward += 0.5
-        elif hr_zone > target_hr and action == "slow down":
-            reward += 0.5
-
-        return reward
+        return total_reward
 
     def _get_zone(self, zone):
         return {"Z1": 1, "Z2": 2, "Z3": 3, "Z4": 4, "Z5": 5}[zone]
