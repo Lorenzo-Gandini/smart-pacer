@@ -11,16 +11,17 @@ from math import radians, cos, sin, asin, sqrt
 
 
 def haversine(lat1, lon1, lat2, lon2):
-    R = 6371000  # metri
+    '''Calculate the great-circle distance between two points on the Earth specified in decimal degrees'''
+    R = 6371000  #Earth radius in meters
     lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2 #calculate the square of half the chord length between the points
     c = 2 * asin(sqrt(a))
     return R * c
 
-
 def slope_level(delta_elev):
+    ''' Labels the slope based on elevation change '''
     if delta_elev > 0.5:
         return "uphill"
     elif delta_elev < -0.5:
@@ -74,7 +75,7 @@ def parse_gpx(file_path):
 def save_to_json(data, output_path):
     with open(output_path, 'w') as f:
         json.dump(data, f, indent=2)
-    print(f"💾 Dati salvati in '{output_path}'")
+    print(f"💾 File saved in '{output_path}'")
 
 
 if __name__ == "__main__":
