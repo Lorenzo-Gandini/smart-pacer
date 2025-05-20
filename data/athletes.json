@@ -5,7 +5,7 @@
       "HR_max": 190,
       "FTP": 430,
       "weight_kg": 70,
-      "fitness_factor": 0.9
+      "fitness_factor": 0.7
     },
 
     "runner": {
@@ -13,7 +13,7 @@
       "HR_max": 180,
       "FTP": 360,
       "weight_kg": 74,
-      "fitness_factor": 1.2
+      "fitness_factor": 1.0
     },
 
     "amatour": {
@@ -21,7 +21,7 @@
       "HR_max": 175,
       "FTP": 280,
       "weight_kg": 85,
-      "fitness_factor": 1.5
+      "fitness_factor": 1.3
     }
   }
   

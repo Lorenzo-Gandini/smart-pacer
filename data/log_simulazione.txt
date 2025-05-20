@@ -1,1 +1,0 @@
-Second: 1 | Action: KEEP GOING | Reward: 2 | Done: False
