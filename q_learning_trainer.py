@@ -3,25 +3,30 @@ import random
 import os
 import time
 import matplotlib.pyplot as plt
-from runner_env import RunnerEnv, load_json
+from runner_env import RunnerEnv, load_json, ACTIONS
 from tqdm import tqdm
 
 # ------------------------------------------------------------------------------
 # HYPERPARAMETER CONFIGURATIONS
 hyperparameter_sets = [
+    {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
+    {"alpha": 0.05, "gamma": 0.95, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
+    {"alpha": 0.1, "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
+    {"alpha": 0.01, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
+    {"alpha": 0.1, "gamma": 0.90, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
     {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.4, "min_epsilon": 0.01, "decay_rate": 0.97},
     {"alpha": 0.05, "gamma": 0.99, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
     {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.1, "min_epsilon": 0.01, "decay_rate": 0.98}
 ]
 
-num_episodes = 2000
+num_episodes = 3000 #500 #2000
 
 # ------------------------------------------------------------------------------
-actions = ['slow down', 'keep going', 'accelerate']
 athletes = load_json("data/json/athletes.json")
 trainings = load_json("data/json/trainings.json")
 track = load_json("data/json/track_data.json")
 
+# ------------------------------------------------------------------------------
 def get_state_key(state):
     return (
         state['HR_zone'],
@@ -35,7 +40,7 @@ def get_state_key(state):
 
 def choose_action(Q, state_key, epsilon):
     if random.random() < epsilon or state_key not in Q:
-        return random.choice(actions)
+        return random.choice(ACTIONS)
     return max(Q[state_key], key=Q[state_key].get)
 
 def run_training(athlete_profile, training_plan, hparams):
@@ -62,14 +67,14 @@ def run_training(athlete_profile, training_plan, hparams):
 
         while not done:
             if state_key not in Q:
-                Q[state_key] = {a: 0.0 for a in actions}
+                Q[state_key] = {a: 0.0 for a in ACTIONS}
 
             action = choose_action(Q, state_key, epsilon)
             next_state, reward, done = env.step(action)
             next_key = get_state_key(next_state)
 
             if next_key not in Q:
-                Q[next_key] = {a: 0.0 for a in actions}
+                Q[next_key] = {a: 0.0 for a in ACTIONS}
 
             best_next = max(Q[next_key].values())
             Q[state_key][action] += alpha * (reward + gamma * best_next - Q[state_key][action])
@@ -82,7 +87,7 @@ def run_training(athlete_profile, training_plan, hparams):
 
 
     os.makedirs("data/figures", exist_ok=True)
-    plot_path = f"data/figures/q_learn_{athlete_profile}_{training_plan}_{num_episodes}ep_{alpha}a_{gamma}g.jpg"
+    plot_path = f"data/figures/q_learn_{athlete_profile}_{training_plan}_{num_episodes}ep_{alpha}a_{gamma}g_v3.jpg"
     plt.plot(episode_rewards)
     plt.title(f"Total Reward - {athlete_profile} - {training_plan}")
     plt.xlabel("Episode")
@@ -99,33 +104,36 @@ def run_training(athlete_profile, training_plan, hparams):
     done = False
 
     while not done:
-        action = max(Q[state_key], key=Q[state_key].get) if state_key in Q else random.choice(actions)
+        action = max(Q[state_key], key=Q[state_key].get) if state_key in Q else random.choice(ACTIONS)
         next_state, reward, done = env.step(action)
         total_reward_eval += reward
         state_key = get_state_key(next_state)
 
     # save Q-table
     os.makedirs("data/q-table", exist_ok=True)
-    q_table_path = f"data/q-table/q_table_{athlete_profile}_{training_plan}_{num_episodes}ep_{alpha}a_{gamma}g_{epsilon}e.json"
+    q_table_path = f"data/q-table/q_table_{athlete_profile}_{training_plan}_{num_episodes}ep_{alpha}a_{gamma}g_{epsilon}e_v3.json"
     with open(q_table_path, "w") as f:
         json.dump({str(k): v for k, v in Q.items()}, f, indent=2)
 
     return total_reward_eval
 
+
 # ------------------------------------------------------------------------------
 # MAIN
-athlete_profiles = ["elite", "runner", "amatour"]
-training_plans = ["fartlek", "progressions", "endurance", "recovery"]
+if __name__ == "__main__":
+    athlete_profiles = ["elite", "runner", "amatour"]
+    training_plans = ["fartlek", "progressions", "endurance", "recovery"]
 
-for hparams in hyperparameter_sets:
-    alpha = hparams["alpha"]
-    gamma = hparams["gamma"]
-    epsilon = hparams["initial_epsilon"]
+    for hparams in hyperparameter_sets:
+        alpha = hparams["alpha"]
+        gamma = hparams["gamma"]
+        epsilon = hparams["initial_epsilon"]
 
-    history_filename = f"data/history-qtraining/history_{alpha}a_{gamma}g_{epsilon}e.txt"
-    with open(history_filename, "w") as history_file:
-        for athlete_profile in athlete_profiles:
-            for training_plan in training_plans:
-                reward = run_training(athlete_profile, training_plan, hparams)
-                history_file.write(f"{athlete_profile}-{training_plan}: {reward:.2f}\n")
-                history_file.flush()
+        history_filename = f"data/history-qtraining/history_{alpha}a_{gamma}g_{epsilon}e.txt"
+        
+        with open(history_filename, "w") as history_file:
+            for athlete_profile in athlete_profiles:
+                for training_plan in training_plans:
+                    reward = run_training(athlete_profile, training_plan, hparams)
+                    history_file.write(f"{athlete_profile}-{training_plan}: {reward:.2f}\n")
+                    history_file.flush()
