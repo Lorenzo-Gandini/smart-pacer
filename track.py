@@ -1,4 +1,6 @@
-# track.py
+'''
+This file contains functions to extract and process GPX data, calculate distances, slopes, and save the data to a JSON file.
+'''
 
 import gpxpy
 import matplotlib.pyplot as plt
@@ -69,32 +71,17 @@ def parse_gpx(file_path):
 
     return data
 
-
-def plot_map(points):
-    if not points:
-        print("Nessun punto trovato nella traccia GPX")
-        return
-
-    start = points[0]
-    fmap = folium.Map(location=(start["lat"], start["lon"]), zoom_start=14)
-    coords = [(p["lat"], p["lon"]) for p in points]
-    folium.PolyLine(coords, color="blue", weight=4.5, opacity=0.8).add_to(fmap)
-    folium.Marker(coords[0], tooltip="Partenza", icon=folium.Icon(color='green')).add_to(fmap)
-    folium.Marker(coords[-1], tooltip="Arrivo", icon=folium.Icon(color='red')).add_to(fmap)
-    fmap.save("track_map.html")
-    print("🗺️ Mappa salvata in 'track_map.html'")
-
-
-def save_to_json(data, output_file="track_data.json"):
-    with open(output_file, 'w') as f:
+def save_to_json(data, output_path):
+    with open(output_path, 'w') as f:
         json.dump(data, f, indent=2)
-    print(f"💾 Dati salvati in '{output_file}'")
+    print(f"💾 Dati salvati in '{output_path}'")
 
 
 if __name__ == "__main__":
-    gpx_file = "additional_data/acquedotti-Lorenzo_Gandini.GPX"
+    circuit = "tre_laghi"  
+    gpx_file = f"data/maps/{circuit}.GPX"
+    output_path = f"data/maps/{circuit}.json"
     data = parse_gpx(gpx_file)
 
     elevations = [p["elevation"] for p in data if p["elevation"] is not None]
-    #plot_map(data)
-    save_to_json(data)
+    save_to_json(data, output_path)
