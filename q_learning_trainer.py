@@ -8,23 +8,27 @@ from tqdm import tqdm
 
 # ------------------------------------------------------------------------------
 # HYPERPARAMETER CONFIGURATIONS
+# hyperparameter_sets = [
+#     {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
+#     {"alpha": 0.05, "gamma": 0.95, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
+#     {"alpha": 0.1, "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
+#     {"alpha": 0.01, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
+#     {"alpha": 0.1, "gamma": 0.90, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
+#     {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.4, "min_epsilon": 0.01, "decay_rate": 0.97},
+#     {"alpha": 0.05, "gamma": 0.99, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
+#     {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.1, "min_epsilon": 0.01, "decay_rate": 0.98}
+# ]
+
 hyperparameter_sets = [
-    {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
-    {"alpha": 0.05, "gamma": 0.95, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
-    {"alpha": 0.1, "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
-    {"alpha": 0.01, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
-    {"alpha": 0.1, "gamma": 0.90, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
-    {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.4, "min_epsilon": 0.01, "decay_rate": 0.97},
-    {"alpha": 0.05, "gamma": 0.99, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
-    {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.1, "min_epsilon": 0.01, "decay_rate": 0.98}
+    {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99}
 ]
 
-num_episodes = 3000 #500 #2000
+num_episodes = 2000 #500
 
 # ------------------------------------------------------------------------------
-athletes = load_json("data/json/athletes.json")
-trainings = load_json("data/json/trainings.json")
-track = load_json("data/json/track_data.json")
+athletes = load_json("data/athletes.json")
+trainings = load_json("data/trainings.json")
+track = load_json("data/maps/acquedotti.json")
 
 # ------------------------------------------------------------------------------
 def get_state_key(state):
@@ -130,7 +134,7 @@ if __name__ == "__main__":
         epsilon = hparams["initial_epsilon"]
 
         history_filename = f"data/history-qtraining/history_{alpha}a_{gamma}g_{epsilon}e.txt"
-        
+
         with open(history_filename, "w") as history_file:
             for athlete_profile in athlete_profiles:
                 for training_plan in training_plans:
