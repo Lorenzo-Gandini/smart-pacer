@@ -1,89 +1,141 @@
+import os
+import glob
+import json
+
 import pandas as pd
+import geopandas as gpd
 import matplotlib.pyplot as plt
 import contextily as ctx
-import geopandas as gpd
 from shapely.geometry import Point
-from matplotlib.animation import FFMpegWriter
+from matplotlib.animation import FuncAnimation
 from matplotlib.collections import LineCollection
-from tqdm import tqdm
-import os
+
+from runner_env import load_json
 
 # === CONFIG ===
-csv_path = "training_logs/runner_fartlek_20250519_111624.csv"
-athlete = csv_path.split("/")[-1].split("_")[0]
-training = csv_path.split("/")[-1].split("_")[1]
-output_video = f"data/video/{athlete}_{training}_video.mp4"
+CSV_DIR       = "data/batch_training_logs"
+ATHLETES_JSON = "data/athletes.json"
+TRAININGS_JSON= "data/trainings.json"
+MAPS_DIR      = "data/maps"
+OUT_DIR       = "data/video/batch_training_logs"
 
-# === LOAD & PROCESS DATA ===
-df = pd.read_csv(csv_path)
-df = df.dropna(subset=["lat", "lon", "fatigue_level"])
-color_map = {"low": "green", "medium": "orange", "high": "red"}
-df["color"] = df["fatigue_level"].map(color_map)
+os.makedirs(OUT_DIR, exist_ok=True)
 
-gdf = gpd.GeoDataFrame(df, geometry=[Point(xy) for xy in zip(df.lon, df.lat)], crs="EPSG:4326")
-gdf = gdf.to_crs(epsg=3857)
-df["x"] = gdf.geometry.x
-df["y"] = gdf.geometry.y
+athletes = load_json(ATHLETES_JSON)
+trainings = load_json(TRAININGS_JSON)
+map_files = glob.glob(os.path.join(MAPS_DIR, "*.json"))
 
-# === FIGURE SETUP ===
-padding_factor = 0.1
-x_pad = (df["x"].max() - df["x"].min()) * padding_factor
-y_pad = (df["y"].max() - df["y"].min()) * padding_factor
-x_min, x_max = df["x"].min() - x_pad, df["x"].max() + x_pad
-y_min, y_max = df["y"].min() - y_pad, df["y"].max() + y_pad
+for profile_label, athlete in athletes.items():
+    print(f"\n>>> Profilo atleta: {profile_label}")
+    for training_name, training in trainings.items():
+        print(f"  * Allenamento: {training_name}")
+        for map_path in map_files:
+            circuit_name = os.path.splitext(os.path.basename(map_path))[0]
+            print(f"    - Circuito: {circuit_name}", end=" ... ")
+    
+            csv_path     = os.path.join(CSV_DIR, f"{profile_label}_{training_name}_{circuit_name}.csv")
+            output_video = os.path.join(OUT_DIR,  f"{profile_label}_{training_name}_{circuit_name}.mp4")
 
-fig, (ax_map, ax_text) = plt.subplots(1, 2, figsize=(10, 12), gridspec_kw={'width_ratios': [3, 1]})
-fig.suptitle("Smart Pacing Simulation", fontsize=16)
-ax_map.set_xlim(x_min, x_max)
-ax_map.set_ylim(y_min, y_max)
-ctx.add_basemap(ax_map, source=ctx.providers.OpenStreetMap.Mapnik)
+            print(csv_path)
+            # 1) DataFrame e downsample
+            df = pd.read_csv(csv_path)
+            STEP = 2
+            df = df[df.second % STEP == 0].reset_index(drop=True)
+            df = df.dropna(subset=["lat", "lon", "fatigue"])
 
-# === GRAFICA ===
-scat, = ax_map.plot([], [], 'ro', label='Athlete')
-line = LineCollection([], linewidths=2)
-ax_map.add_collection(line)
-text_box = ax_text.text(0.05, 0.95, "", transform=ax_text.transAxes, fontsize=9, va='top', family='monospace')
-ax_text.axis('off')
+            # 2) Color map
+            color_map = {"low":"green", "medium":"orange", "high":"red"}
+            df["color"] = df["fatigue"].map(color_map)
 
-# === ANIMATION LOGIC ===
-def update(frame):
-    x = df["x"].values
-    y = df["y"].values
+            # 3) GeodataFrame e proiezione
+            gdf = gpd.GeoDataFrame(
+                df,
+                geometry=[Point(xy) for xy in zip(df.lon, df.lat)],
+                crs="EPSG:4326"
+            ).to_crs(epsg=3857)
+            df["x"] = gdf.geometry.x
+            df["y"] = gdf.geometry.y
 
-    # Aggiorna linea colorata
-    segments = [[[x[i], y[i]], [x[i+1], y[i+1]]] for i in range(frame)]
-    colors = [color_map[df["fatigue_level"].iloc[i+1]] for i in range(frame)]
-    line.set_segments(segments)
-    line.set_color(colors)
+            # 4) Estrai array
+            xs     = df["x"].values
+            ys     = df["y"].values
+            colors = df["color"].tolist()
 
-    # Punto atleta
-    scat.set_data([x[frame]], [y[frame]])
+            # 5) Setup limiti
+            pad = 0.1
+            x_pad = (xs.max() - xs.min()) * pad
+            y_pad = (ys.max() - ys.min()) * pad
+            x_min, x_max = xs.min() - x_pad, xs.max() + x_pad
+            y_min, y_max = ys.min() - y_pad, ys.max() + y_pad
 
-    # Lavagna info
-    row = df.iloc[frame]
-    total_time = df["second"].max()
-    info = f"""
-Second       : {int(row['second'])} / {int(total_time)} sec
-Phase        : {row['phase']}
-Fatigue      : {row['fatigue_level']}
-Action       : {row['action']}
-HR Zone      : {row['HR_zone']}
-Power Zone   : {row['power_zone']}
-Target HR    : {row['target_HR']}
-Target Power : {row['target_power']}
-Slope        : {row['slope']}
-Reward       : {row['reward']:.2f}
-"""
-    text_box.set_text(info)
-    return [scat, line, text_box]
+            # 6) Figura e assi
+            fig, (ax_map, ax_text) = plt.subplots(
+                1, 2, figsize=(10, 12),
+                gridspec_kw={'width_ratios':[3,1]}
+            )
+            fig.suptitle(f"{profile_label} – {training_name} – {circuit_name}", fontsize=16)
 
-# === VIDEO EXPORT ===
-writer = FFMpegWriter(fps=20, metadata=dict(artist='SmartPacer'), codec='libx264')
+            ax_map.set_xlim(x_min, x_max)
+            ax_map.set_ylim(y_min, y_max)
+            ctx.add_basemap(ax_map, source=ctx.providers.OpenStreetMap.Mapnik)
+            ax_map.set_autoscale_on(False)
 
-with writer.saving(fig, output_video, dpi=100):
-    for frame in tqdm(range(len(df)), desc="🎞 Saving video", ncols=70):
-        update(frame)
-        writer.grab_frame()
+            # punto e linea
+            scat, = ax_map.plot([], [], 'ro', label='Athlete')
+            line = LineCollection([], linewidths=2)
+            ax_map.add_collection(line)
 
-plt.close(fig)
-print("✅ Video saved:", output_video)
+            # textbox
+            text_box = ax_text.text(
+                0.05, 0.95, "",
+                transform=ax_text.transAxes,
+                fontsize=9, va='top', family='monospace'
+            )
+            ax_text.axis('off')
+
+            # 7) init & animate
+            def init():
+                scat.set_data([], [])
+                line.set_segments([])
+                text_box.set_text("")
+                return scat, line, text_box
+
+            def animate(i):
+                segs = [[[xs[j], ys[j]], [xs[j+1], ys[j+1]]] for j in range(i)]
+                line.set_segments(segs)
+                line.set_color(colors[:i])
+
+                # Correctly set as sequences
+                scat.set_data([xs[i]], [ys[i]])
+
+                row = df.iloc[i]
+                info = (
+                    f"Second: {int(row.second)}/{int(df.second.max())}\n"
+                    f"Phase:   {row.phase}\n"
+                    f"Action:  {row.action}\n"
+                    f"Fatigue: {row.fatigue}\n"
+                    f"HR Z:    {row.HR_zone}   Power Z: {row.power_zone}"
+                )
+                text_box.set_text(info)
+                return scat, line, text_box
+
+            # 8) Animazione con blit
+            anim = FuncAnimation(
+                fig, animate,
+                frames=len(df),
+                init_func=init,
+                blit=True,
+                interval=100  # ms → 10 fps
+            )
+
+            anim.save(
+                output_video,
+                writer='ffmpeg',
+                fps=10,
+                dpi=100,
+                metadata={'artist':'SmartPacer'},
+                bitrate=2000
+            )
+
+            plt.close(fig)
+            print("✅ Video saved:", output_video)
