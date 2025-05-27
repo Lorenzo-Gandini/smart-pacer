@@ -9,10 +9,6 @@ from datetime import datetime
 import paho.mqtt.client as mqtt
 
 
-# ==== INITIAL SETTINGS ==== #
-
-MQTT_COMMUNICATION = True
-
 # ==== FUNCTIONS ==== #
 def begin_session():
     print("\n👤 Let's configure your session.")
@@ -48,7 +44,7 @@ def begin_session():
     
     circuit_map = {
         "1": "belfiore",
-        "2": "3laghi",
+        "2": "tre_laghi",
         "3": "acquedotti"
     }
     circuit_choice = input("Enter the number of the circuit [1-3]: ").strip()
@@ -88,7 +84,7 @@ def euclidean_distance(p1, p2):
 
 def get_profile_label(athlete):
     '''Load the correct q-table based on the athlete and training profile'''
-    base_profiles = load_json("data/json/athletes.json")
+    base_profiles = load_json("data/athletes.json")
     distances = {
         label: euclidean_distance(athlete, base_profiles[label])
         for label in base_profiles
@@ -97,15 +93,48 @@ def get_profile_label(athlete):
 
 def get_training_label(training_name):
     '''Load the correct q-table based on the training type'''
-    trainings = load_json("data/json/trainings.json")
+    trainings = load_json("data/trainings.json")
     training = trainings[training_name]
     return training
 
-def save_training_session(session_data, athlete_profile, training_type, track_data):
+def load_qtable(profile_label, training_type):
+    q_table_path = f"data/q-table/q_table_{profile_label}_{training_type}.json"
+    with open(q_table_path) as f:
+        raw_q_table = json.load(f)
+    Q = {eval(k): v for k, v in raw_q_table.items()}
+
+    return Q
+
+def get_state_key(state):
+    return (
+        state['HR_zone'],
+        state['power_zone'],
+        state['fatigue_level'],
+        state['phase_label'],
+        state['target_hr_zone'],
+        state['target_power_zone'],
+        state['slope_level']    )
+
+def append_data(state, action, reward):
+    '''Append data to the session data list'''
+    session_data.append({
+        'second': state['segment_index'],
+        'phase': state['phase_label'],
+        'fatigue': state['fatigue_level'],
+        'action': action,
+        'HR_zone': state['HR_zone'],
+        'power_zone': state['power_zone'],
+        'target_HR': state['target_hr_zone'],
+        'target_power': state['target_power_zone'],
+        'slope': state['slope_level'],
+        'reward': reward,
+        'fatigue_score': env.fatigue_score,
+    })
+
+def save_training_session(session_data, athlete_profile, training_type, track_data, circuit_name):
     '''Save the training session data to a CSV file'''
     os.makedirs("training_logs", exist_ok=True)
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"training_logs/{athlete_profile}_{training_type}_{timestamp}.csv"
+    filename = f"training_logs/{athlete_profile}_{training_type}_{circuit_name}.csv"
     
     fieldnames = [
         'second', 
@@ -141,55 +170,23 @@ def save_training_session(session_data, athlete_profile, training_type, track_da
     print(f"\n📊 Data saved in: {filename}")
     return filename
 
-def load_qtable(profile_label, training_type):
-    q_table_path = f"data/q-table/q_table_{profile_label}_{training_type}_2000ep_0.01a_0.95g_0.01e_v2.json"
-    with open(q_table_path) as f:
-        raw_q_table = json.load(f)
-    Q = {eval(k): v for k, v in raw_q_table.items()}
-
-    return Q
-
-def get_state_key(state):
-    return (
-        state['HR_zone'],
-        state['power_zone'],
-        state['fatigue_level'],
-        state['phase_label'],
-        state['target_hr_zone'],
-        state['target_power_zone'],
-        state['slope_level']    )
-
-def append_data(state, action, reward):
-    '''Append data to the session data list'''
-    session_data.append({
-        'second': state['segment_index'],
-        'phase': state['phase_label'],
-        'fatigue': state['fatigue_level'],
-        'action': action,
-        'HR_zone': state['HR_zone'],
-        'power_zone': state['power_zone'],
-        'target_HR': state['target_hr_zone'],
-        'target_power': state['target_power_zone'],
-        'slope': state['slope_level'],
-        'reward': reward,
-        'fatigue_score': env.fatigue_score,
-    })
 
 # ==== MAIN SIMULATION ==== #
-
-input_athlete, training_name, circuit = begin_session()
+input_athlete, training_name, circuit_name = begin_session()
 profile_label = get_profile_label(input_athlete)
-print("Nearest profile : ", profile_label)
-
-circuit = load_json(f"data/json/{circuit}.json")
+circuit = load_json(f"data/maps/{circuit_name}.json")
 training = get_training_label(training_name)
 
-Q = load_qtable(profile_label, training)
+print("Nearest profile : ", profile_label)
+
+Q = load_qtable(profile_label, training_name)
 env = RunnerEnv(input_athlete, training, track_data=circuit, verbose=True)
 state = env.reset()
 training_completed = False
 total_reward = 0
 session_data = []
+
+MQTT_COMMUNICATION = False # Set to True to enable MQTT communication 
 
 if MQTT_COMMUNICATION:
     client = mqtt.Client()
@@ -213,6 +210,6 @@ while not training_completed:
         time.sleep(0.5)
 
 
-save_training_session(session_data, profile_label, training_type, track)    
+save_training_session(session_data, profile_label, training_name, circuit, circuit_name)    
 print(f"\n🏁 Training completed! Total reward: {total_reward:.2f}")
 
