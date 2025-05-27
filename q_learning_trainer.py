@@ -20,8 +20,8 @@ from tqdm import tqdm
 # ]
 
 hyperparameter_sets = [
-    {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99}
-]
+    {"alpha": 0.1, "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98}
+] #v2
 
 num_episodes = 2000 #500
 
@@ -90,15 +90,15 @@ def run_training(athlete_profile, training_plan, hparams):
         epsilon = max(min_epsilon, epsilon * decay_rate)
 
 
-    os.makedirs("data/figures", exist_ok=True)
-    plot_path = f"data/figures/q_learn_{athlete_profile}_{training_plan}_{num_episodes}ep_{alpha}a_{gamma}g_v3.jpg"
-    plt.plot(episode_rewards)
-    plt.title(f"Total Reward - {athlete_profile} - {training_plan}")
-    plt.xlabel("Episode")
-    plt.ylabel("Total Reward")
-    plt.grid(True)
-    plt.savefig(plot_path)
-    plt.clf()
+    # os.makedirs("data/figures", exist_ok=True)
+    # plot_path = f"data/figures/q_learn_{athlete_profile}_{training_plan}.jpg"
+    # plt.plot(episode_rewards)
+    # plt.title(f"Total Reward - {athlete_profile} - {training_plan}")
+    # plt.xlabel("Episode")
+    # plt.ylabel("Total Reward")
+    # plt.grid(True)
+    # plt.savefig(plot_path)
+    # plt.clf()
 
     # Final evaluation with epsilon = 0
     env = RunnerEnv(athlete, training, track_data=track, verbose=False)
@@ -115,7 +115,7 @@ def run_training(athlete_profile, training_plan, hparams):
 
     # save Q-table
     os.makedirs("data/q-table", exist_ok=True)
-    q_table_path = f"data/q-table/q_table_{athlete_profile}_{training_plan}_{num_episodes}ep_{alpha}a_{gamma}g_{epsilon}e_v3.json"
+    q_table_path = f"data/q-table/q_table_{athlete_profile}_{training_plan}_v2.json"
     with open(q_table_path, "w") as f:
         json.dump({str(k): v for k, v in Q.items()}, f, indent=2)
 
@@ -133,7 +133,7 @@ if __name__ == "__main__":
         gamma = hparams["gamma"]
         epsilon = hparams["initial_epsilon"]
 
-        history_filename = f"data/history-qtraining/history_{alpha}a_{gamma}g_{epsilon}e.txt"
+        history_filename = f"data/history-qtraining/history.txt"
 
         with open(history_filename, "w") as history_file:
             for athlete_profile in athlete_profiles:
