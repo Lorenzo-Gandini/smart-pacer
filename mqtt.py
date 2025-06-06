@@ -1,5 +1,3 @@
-# mqtt.py
-
 import paho.mqtt.client as mqtt
 import json
 from datetime import datetime
