@@ -1,25 +1,24 @@
 
 # 🏃‍♂️ Smart Pacer
 
-**Smart Pacer** is a reinforcement learning-based system that simulates and advises runners second-by-second during training sessions. It integrates Q-learning and a Markov Decision Process approach to guide action selection (accelerate, keep going, slow down) based on physiological state, workout phase, and real-world elevation data. A mqtt communciation is simulated, like a comunciation with a smartwatch that works as pacer-assistant.
-This project is developed as a project course for the Internet of Things exam @LaSapienza. 
+**Smart Pacer** is a reinforcement-learning system that coaches runners in real time, second by second. It uses Q-learning and an MDP framework to pick the best action (speed up, keep pace, slow down) based on your heart-rate zone, power zone, slope, and fatigue. There’s even a simulated MQTT link—think of it like your smartwatch chatting with a personal pacing assistant.
+Developed as an IoT course project at La Sapienza.
 
 ---
 
 ## 🔍 Objective
 
-The goal of my project is to model a pacing assistant capable of optimizing training performance while managing fatigue. The assistant learns an optimal policy that maps a state (heart rate zone, power zone, slope of the training ground, fatigue) to an action that maximizes long-term reward over the course of the workout.
-The idea comes from sessions where fatigue hits you hard due to other circumstances (bad sleep or indigestion) that don't allow you to train properly. Or even sometimes you feel in a very good shape and the training session can be pushed a little bit further. These phisiological states can be used to maximize the training or avoid injuries.
+Smart Pacer’s goal is simple: help you train **smarter, not harder**. It learns a policy that maps your physiological state (HR & power zones, fatigue) and training ground state (slope level) to actions that maximize long-term reward across a workout. Whether you’re feeling under-the-weather or in peak form, Smart Pacer adjusts so you push when you can and back off when you need to.
 
 ---
 
 ## 📁 Project Structure
 
-- `main.py`: runs an actual training session using a learned policy
-- `q_learning_trainer.py`: trains the policy and saves Q-table
-- `runner_env.py`: environment logic (state transition, reward, track integration)
-- `mqtt.py`: MQTT listener/subscriber
-- `track.py`: parses and preprocesses elevation data from GPX
-- `data/athletes.json`, `data/trainings.json`: default data for ethletes and training programs
-- `data/q-tables`: q-tables for all the combinations of athlete and training program
-- `data/maps`: three different tracks for the training session
+- `main.py`: Run a live training session using the learned Q-table
+- `q_learning_trainer.py`: Train the policy and save your Q-table
+- `runner_env.py`: Environment logic (state transitions, rewards, track integration)
+- `mqtt.py`: MQTT subscriber (simulates the smartwatch link)
+- `track.py`: Parse and preprocess elevation data from GPX files
+- `data/athletes.json`, `data/trainings.json`: Default athlete profiles & workout plans
+- `data/q-tables`: Saved Q-tables for every athlete–workout combo
+- `data/maps`: Three different running circuits for your sessions

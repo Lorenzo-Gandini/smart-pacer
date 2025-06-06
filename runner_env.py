@@ -1,6 +1,7 @@
 import random
 import json
 import math
+import numpy as np
 
 ACTIONS = ['slow down', 'keep going', 'accelerate']
 
@@ -50,6 +51,23 @@ class RunnerEnv:
         reward = self._compute_reward(action)
         done = self.second >= self.training["duration"] * 60
         self._log_state(action, reward, done)
+
+        if not hasattr(self, '_fatigue_thresholds'):
+            self._fatigue_thresholds = {"low": 33, "high": 67}  # percentiles for fatigue levels
+            self._fatigue_values = []
+
+        self._fatigue_values.append(self.fatigue_score)
+        # low_th = np.percentile(self._fatigue_values, self._fatigue_thresholds["low"])
+        # high_th = np.percentile(self._fatigue_values, self._fatigue_thresholds["high"])
+        low_th = 35
+        high_th = 70
+
+        if self.fatigue_score >= high_th:
+            self.state["fatigue_level"] = "high"
+        elif self.fatigue_score >= low_th:
+            self.state["fatigue_level"] = "medium"
+        else:
+            self.state["fatigue_level"] = "low"
         return self.state.copy(), reward, done
 
     def _update_power_zone(self, action): #THIS update logic is so easy?
@@ -160,20 +178,20 @@ class RunnerEnv:
         - Fatigue Penalty: based on the athlete's profiles, are defined different tresholds (an elite can manage better the fatigue than an amatour). based on them, a penalty is applied to the reward if the fatigue score exceeds certain levels. 
         - Physiological coherence : if the difference between HR and Power zones is within expected limits, a bonus is applied, otherwise a penalty is applied. An elite athlete should be able to maintain a smaller difference than an amatour. 
         - Phase-specific bonuses : different phases of the training session have different expected actions and rewards. For example, during the warmup phase, accelerating when below target HR is rewarded, while slowing down is penalized. In the push phase, accelerating when below target HR is rewarded (the goal is to reach that zone), while slowing down when above target HR is penalized (a behaviour that we expect from an amatour when suffers from a high fatigue).
+        - Pacing-coherence with slope : This is a bonus or penalty based on the slope of the track and the action taken.
         - Capacity scaling : The capacity adjustment is a penalty that represents the athlete's ability to sustain high power outputs relative to their FTP. for each hr zone a penalty is defined, which is scaled by the athlete's FTP per kg. We do this because a lighter athlete with the same FTP as a heavier athlete is more efficient, so they should have a lower penalty.
         - Dynamic tolerance & funnel : The tolerance shrinks as the session progresses, and a funnel bonus is applied when the athlete is in the target zones. The funnel bonus is a bonus that represents the athlete's ability to maintain the target zones as the session progresses. 
         # These values are want to emulate the fact that an athlete can maintain a target HR and Power zone for a longer time as they progress through the session, but the tolerance shrinks as they get closer to the end of the session.
         - Combine and randomize the final reward.
         '''
 
-
-        # Zones and state
         hr_zone = self._get_zone(self.state["HR_zone"])
         power_zone = self._get_zone(self.state["power_zone"])
         target_hr = self._get_zone(self.state["target_hr_zone"])
         target_power = self._get_zone(self.state["target_power_zone"])
         phase = self.state["phase_label"]
-
+        slope = self.state["slope_level"]
+        
         # Athlete level by FTP per kg
         #THIS check if in the athletes profiles the ratios are maintened
         ftp_per_kg = self.ftp / self.weight
@@ -184,7 +202,7 @@ class RunnerEnv:
         else:
             athlete_level = "amatour"
 
-        # Zone Matching Reward (40% HR, 40% Power)
+        # Zone Matching Reward
         hr_diff = abs(hr_zone - target_hr)
         power_diff = abs(power_zone - target_power)
         hr_reward = {0:2.0,1:0.5,2:-1.0,3:-2.5,4:-4.0}.get(hr_diff, -4.0)
@@ -192,8 +210,8 @@ class RunnerEnv:
 
         # Fatigue penalty
         thresholds = {"elite":{"low":5.0,"medium":7.0},
-                      "runner":{"low":4.0,"medium":6.0},
-                      "amatour":{"low":3.0,"medium":5.0}}[athlete_level]
+                    "runner":{"low":4.0,"medium":6.0},
+                    "amatour":{"low":3.0,"medium":5.0}}[athlete_level]
         fat = self.fatigue_score
         if fat <= thresholds["low"]:
             fatigue_penalty = 0.0
@@ -203,7 +221,6 @@ class RunnerEnv:
             fatigue_penalty = -2.0 * (fat - thresholds["medium"])
 
         # Physiological coherence
-        # THIS . CHECK if it has sense
         diff = abs(hr_zone - power_zone)
         expected = {"elite":0.5, "runner":1.0, "amatour":1.5}[athlete_level]
         coherence_bonus = 1.0 if diff <= expected else -1.0 * (diff - expected)
@@ -228,15 +245,22 @@ class RunnerEnv:
             elif action == "accelerate":
                 phase_bonus = -2.0
 
+        # Pacing-coherence with slope.
+        slope_penalty = 0.0
+        if slope == 'uphill' and action == 'accelerate':
+            slope_penalty = -2.0
+        elif slope == 'downhill' and action == 'slow down':
+            slope_penalty = -0.5
+
         # Capacity scaling
         cap_pen = {1:0.0,2:0.0,3:0.5,4:1.5,5:3.0}[hr_zone]
         cap_factor = min(1.0, ftp_per_kg/6.0)
         capacity_adj = -cap_pen * (1.0 - cap_factor)
 
-        # Dynamic tolerance & funnel.
+        # Dynamic funnel bonus
         total_steps = self.training["duration"]*60
-        prog = min(1.0, self.second/total_steps) # progress of the session
-        tol = 1 if prog < 0.5 else 0  # tolerance shrinks mid-session
+        prog = min(1.0, self.second/total_steps)
+        tol = 1 if prog < 0.5 else 0
         in_zone = (hr_diff <= tol and power_diff <= tol)
         if not hasattr(self, '_prev_in_zone'):
             self._prev_in_zone = False
@@ -248,11 +272,17 @@ class RunnerEnv:
             funnel_bonus = 0.0
         self._prev_in_zone = in_zone
 
-        # Combine and randomize. Each component has a different weight in the final reward. To avoid overfitting, we add a small random noise to the final reward to make it more dynamic.
-        # THIS . check if with different values of noise the results are better or worse
-        total = (0.4*hr_reward + 0.4*power_reward + 0.3*coherence_bonus
-                 + 0.2*phase_bonus + fatigue_penalty + capacity_adj + funnel_bonus)
-        total += random.uniform(-0.1,0.1)
+        # Combinazione finale
+        total = (0.4*hr_reward + 0.4*power_reward + 0.3*coherence_bonus +
+                0.2*phase_bonus + fatigue_penalty + capacity_adj +
+                slope_penalty + funnel_bonus)
+
+        # Penalità fisiologica complessiva se fatica alta
+        fatigue_decay = 1.0 - min(self.fatigue_score / 200.0, 0.4)  # max decay -40%
+        total *= fatigue_decay
+
+        # Rumore casuale
+        total += random.uniform(-0.1, 0.1)
         return total
 
     def _get_zone(self, zone):

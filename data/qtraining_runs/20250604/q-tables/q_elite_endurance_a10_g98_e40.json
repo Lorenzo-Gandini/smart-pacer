@@ -1,0 +1,502 @@
+{
+  "('Z1', 'Z1', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 127.76051050664523,
+    "keep going": 127.77511557679598,
+    "accelerate": 127.04853338852865
+  },
+  "('Z1', 'Z1', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": 128.36508225947713,
+    "keep going": 129.01590436817852,
+    "accelerate": 127.16763005955751
+  },
+  "('Z1', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 128.4047419123752,
+    "keep going": 125.74224054481289,
+    "accelerate": 85.16860740419206
+  },
+  "('Z1', 'Z1', 'low', 'warmup', 'Z1', 'Z1', 'uphill')": {
+    "slow down": 128.2696716905578,
+    "keep going": 129.00670463216304,
+    "accelerate": 127.1621126593764
+  },
+  "('Z1', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'uphill')": {
+    "slow down": 128.46041784853566,
+    "keep going": 61.25731661948681,
+    "accelerate": 33.19678282640577
+  },
+  "('Z2', 'Z3', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 97.38808728498637,
+    "keep going": 39.65301664134597,
+    "accelerate": 5.0497159039990365
+  },
+  "('Z2', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 102.68213850908393,
+    "keep going": 49.13858594637449,
+    "accelerate": 36.94410890932053
+  },
+  "('Z2', 'Z3', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": 67.59434886668724,
+    "keep going": 5.647725435428711,
+    "accelerate": -0.16422860819946142
+  },
+  "('Z3', 'Z4', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": -0.07665450675026944,
+    "keep going": -0.13525132702788564,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z3', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 6.897488086258635,
+    "keep going": 0.3572682418253745,
+    "accelerate": -0.31470536155751305
+  },
+  "('Z3', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": 15.772443330941154,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z2', 'Z1', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 124.65749740219486,
+    "keep going": 71.69361649704129,
+    "accelerate": 63.551856254101835
+  },
+  "('Z2', 'Z1', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": 13.420359154320295,
+    "keep going": 107.54333985006669,
+    "accelerate": 37.559284645032115
+  },
+  "('Z2', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": 83.91284982562688,
+    "keep going": 0.0,
+    "accelerate": 15.39157011014087
+  },
+  "('Z2', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'uphill')": {
+    "slow down": 77.88333290821494,
+    "keep going": 10.14690905264098,
+    "accelerate": 9.389093928434068
+  },
+  "('Z1', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": 128.4372735795656,
+    "keep going": 89.83467879439846,
+    "accelerate": 49.867407821380006
+  },
+  "('Z2', 'Z3', 'low', 'warmup', 'Z1', 'Z1', 'uphill')": {
+    "slow down": 53.567632609524296,
+    "keep going": 3.9068195226116886,
+    "accelerate": 0.6954692661681927
+  },
+  "('Z2', 'Z1', 'low', 'warmup', 'Z1', 'Z1', 'uphill')": {
+    "slow down": 89.86001275436695,
+    "keep going": 0.0,
+    "accelerate": 24.508370467664143
+  },
+  "('Z3', 'Z4', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 8.916504797693907,
+    "keep going": -0.2913583700378156,
+    "accelerate": -0.26894689497922875
+  },
+  "('Z4', 'Z5', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": -0.2321315282947195,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z4', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": -0.17988298001105282,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z3', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": -0.06056815256051632,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 20.403612702104088,
+    "keep going": -0.0414855644434466,
+    "accelerate": -0.04532088609753345
+  },
+  "('Z3', 'Z1', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.7562171410962644,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z3', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 119.04616235904604,
+    "keep going": 117.09611060988092,
+    "accelerate": 114.09441016107
+  },
+  "('Z3', 'Z2', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 116.04791707642336,
+    "keep going": 120.4384665412507,
+    "accelerate": 116.47504937722223
+  },
+  "('Z2', 'Z2', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 118.98040950751,
+    "keep going": 118.84769738275118,
+    "accelerate": 118.72405423128572
+  },
+  "('Z2', 'Z1', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 118.51197000154099,
+    "keep going": 118.59368957992082,
+    "accelerate": 120.92999637790481
+  },
+  "('Z2', 'Z1', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 118.30868496520476,
+    "keep going": 115.66319786333307,
+    "accelerate": 120.12456763735257
+  },
+  "('Z1', 'Z1', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 110.79271050646508,
+    "keep going": 109.73816423860056,
+    "accelerate": 117.23862159302017
+  },
+  "('Z2', 'Z3', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 120.5984603983363,
+    "keep going": 118.52954976891058,
+    "accelerate": 112.99208574560843
+  },
+  "('Z2', 'Z3', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 120.25281609361066,
+    "keep going": 117.62778022873488,
+    "accelerate": 111.03816181116981
+  },
+  "('Z2', 'Z2', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 119.10304345650106,
+    "keep going": 119.95208030882506,
+    "accelerate": 119.07709501248029
+  },
+  "('Z2', 'Z2', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 118.9022149242216,
+    "keep going": 119.99233091595868,
+    "accelerate": 118.88968609104941
+  },
+  "('Z2', 'Z3', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 118.58262680043677,
+    "keep going": 118.99183685754053,
+    "accelerate": 112.48439865399556
+  },
+  "('Z2', 'Z4', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 119.17461679546777,
+    "keep going": 72.14932635303973,
+    "accelerate": 62.870666889003004
+  },
+  "('Z3', 'Z3', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 118.78013169796596,
+    "keep going": 64.48822454276075,
+    "accelerate": 72.7413302033221
+  },
+  "('Z1', 'Z2', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 20.944360685374537,
+    "keep going": 35.000748538526864,
+    "accelerate": 22.244830267904653
+  },
+  "('Z1', 'Z2', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 111.10711581863656,
+    "keep going": 117.21050173938035,
+    "accelerate": 105.00117057273873
+  },
+  "('Z2', 'Z4', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 74.26497975144952,
+    "keep going": 11.326207311681742,
+    "accelerate": 17.66002092260812
+  },
+  "('Z3', 'Z4', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 118.24467016561806,
+    "keep going": 112.26102792059119,
+    "accelerate": 79.38007276516902
+  },
+  "('Z3', 'Z2', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 118.55484508366214,
+    "keep going": 58.41543400378035,
+    "accelerate": 24.086267776858467
+  },
+  "('Z2', 'Z1', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 118.6018400119484,
+    "keep going": 117.77719626963997,
+    "accelerate": 119.62194326242827
+  },
+  "('Z3', 'Z3', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 57.58967933984304,
+    "keep going": 117.25201196867589,
+    "accelerate": 37.80266665615814
+  },
+  "('Z3', 'Z4', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 116.95176439227575,
+    "keep going": 51.033368699491284,
+    "accelerate": 25.669893920184784
+  },
+  "('Z3', 'Z5', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 0.14249695489937655,
+    "keep going": 22.837988353283357,
+    "accelerate": 7.730245737413618
+  },
+  "('Z3', 'Z2', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 116.95613830746042,
+    "keep going": 22.554661568051987,
+    "accelerate": 43.97799007133577
+  },
+  "('Z3', 'Z5', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 96.01044412208402,
+    "keep going": 38.51472819446229,
+    "accelerate": 44.52695210396353
+  },
+  "('Z4', 'Z4', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 94.0802928421295,
+    "keep going": 27.68673588518609,
+    "accelerate": 1.1017754511303464
+  },
+  "('Z4', 'Z5', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 0.040159708159541035,
+    "keep going": -0.153777897076105,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z3', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 95.02336177173402,
+    "keep going": 5.605703925469214,
+    "accelerate": 12.97246619183863
+  },
+  "('Z4', 'Z5', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 53.149872759316224,
+    "keep going": -0.38243696756447215,
+    "accelerate": -0.4281560818932269
+  },
+  "('Z4', 'Z2', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 2.08192905064587,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z1', 'low', 'push', 'Z2', 'Z2', 'flat')": {
+    "slow down": 68.09353862735216,
+    "keep going": 61.60791146934699,
+    "accelerate": 105.45400298283218
+  },
+  "('Z3', 'Z4', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 112.354584076122,
+    "keep going": 12.304245572550514,
+    "accelerate": 51.09025795108171
+  },
+  "('Z1', 'Z1', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 37.9664148109513,
+    "keep going": 116.0064941424055,
+    "accelerate": 31.077043759824054
+  },
+  "('Z1', 'Z2', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 69.8126753191389,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z1', 'Z1', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 116.18906728391195,
+    "keep going": 30.579301777665346,
+    "accelerate": 48.22729874168243
+  },
+  "('Z3', 'Z5', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 1.1733075297185618,
+    "keep going": 0.0,
+    "accelerate": 19.70753567411353
+  },
+  "('Z4', 'Z3', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 21.10483198245668,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z1', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 0.12006124782694745,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z4', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 29.05636012040953,
+    "keep going": 0.3080554169277326,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z4', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 16.023024293330124,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z1', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 14.198724842683161,
+    "keep going": 34.78208729126461,
+    "accelerate": 12.147871622417464
+  },
+  "('Z2', 'Z4', 'low', 'push', 'Z2', 'Z2', 'downhill')": {
+    "slow down": 67.64106101871559,
+    "keep going": 0.0,
+    "accelerate": 14.854358188541052
+  },
+  "('Z3', 'Z4', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 112.82544952360622,
+    "keep going": 105.02603676637489,
+    "accelerate": 97.9477705682744
+  },
+  "('Z3', 'Z3', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 104.83727088429248,
+    "keep going": 108.24612777766843,
+    "accelerate": 100.76468996947418
+  },
+  "('Z3', 'Z2', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 105.9106863143427,
+    "keep going": 98.48124570378268,
+    "accelerate": 101.44770734149174
+  },
+  "('Z2', 'Z1', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 96.16034838546288,
+    "keep going": 95.7076771664132,
+    "accelerate": 109.19604520285304
+  },
+  "('Z2', 'Z2', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 102.73810881491939,
+    "keep going": 102.48561112104169,
+    "accelerate": 110.51503426597469
+  },
+  "('Z2', 'Z3', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 104.9256029382601,
+    "keep going": 105.58473496014614,
+    "accelerate": 111.76836604623375
+  },
+  "('Z2', 'Z4', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 109.60261013775204,
+    "keep going": 16.10594413286908,
+    "accelerate": 0.12374367004597149
+  },
+  "('Z3', 'Z5', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 103.7812479321501,
+    "keep going": 13.381490339464335,
+    "accelerate": 10.765936806720065
+  },
+  "('Z3', 'Z1', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 106.47557422882075,
+    "keep going": 33.3319359028974,
+    "accelerate": 39.94663643568728
+  },
+  "('Z4', 'Z5', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 108.47446777257414,
+    "keep going": 73.51055333936833,
+    "accelerate": 91.53398179671602
+  },
+  "('Z4', 'Z4', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 113.82594616708884,
+    "keep going": 103.69469417748023,
+    "accelerate": 102.77466616440744
+  },
+  "('Z4', 'Z3', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 99.89759473205476,
+    "keep going": 91.49301053131596,
+    "accelerate": 109.31013084089368
+  },
+  "('Z3', 'Z3', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z2', 'Z4', 'low', 'warmup', 'Z1', 'Z1', 'flat')": {
+    "slow down": 31.7009073904857,
+    "keep going": 0.5816974889043968,
+    "accelerate": -0.4387061053032503
+  },
+  "('Z3', 'Z2', 'low', 'warmup', 'Z1', 'Z1', 'uphill')": {
+    "slow down": 7.779726610012139,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z3', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 27.6363496325863,
+    "keep going": 11.208656473071187,
+    "accelerate": 0.0
+  },
+  "('Z1', 'Z1', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 5.789065702591059,
+    "keep going": 4.13512073531845,
+    "accelerate": 100.38876046242214
+  },
+  "('Z1', 'Z2', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 0.5967183855204686,
+    "keep going": 12.801076535982276,
+    "accelerate": 0.0
+  },
+  "('Z2', 'Z2', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z5', 'low', 'warmup', 'Z1', 'Z1', 'uphill')": {
+    "slow down": -0.1502174776621109,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z3', 'low', 'warmup', 'Z1', 'Z1', 'uphill')": {
+    "slow down": -0.061840208896222576,
+    "keep going": -0.07479385455560517,
+    "accelerate": 0.9792015660067963
+  },
+  "('Z3', 'Z3', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": -0.050175870763857655,
+    "keep going": -0.07490541071907791,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z5', 'low', 'push', 'Z2', 'Z2', 'uphill')": {
+    "slow down": 10.505287580181824,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z3', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z2', 'Z4', 'low', 'warmup', 'Z1', 'Z1', 'downhill')": {
+    "slow down": 0.0,
+    "keep going": 3.1132004710260843,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z2', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 71.61339233670992,
+    "keep going": 11.317524109096746,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z2', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z4', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z1', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z5', 'Z5', 'low', 'push', 'Z3', 'Z3', 'flat')": {
+    "slow down": 100.22174496101884,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z4', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z2', 'Z1', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z3', 'Z5', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z4', 'Z5', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  },
+  "('Z2', 'Z3', 'low', 'cooldown', 'Z1', 'Z1', 'flat')": {
+    "slow down": 0.0,
+    "keep going": 0.0,
+    "accelerate": 0.0
+  }
+}

@@ -2,3 +2,8 @@ paho-mqtt
 gpxpy 
 folium
 tqdm
+pandas
+geopandas
+contextily
+shapely.geometry
+matplotlib
