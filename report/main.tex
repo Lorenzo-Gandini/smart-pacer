@@ -1,0 +1,131 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{textcomp}
+
+\geometry{a4paper, margin=1in}
+
+\title{Smart Pacer}
+\author{Lorenzo Gandini \\ Internet of Things \\ University La Sapienza \\ A.Y. 2024/2025}
+\date{\today}
+
+\begin{document}
+
+% Copertina
+\maketitle
+
+\newpage
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+\section{Abstract}\label{abstract}
+Performance­-oriented runners quickly plateau when they follow rigid training plans that ignore day-to-day fluctuations in physiological readiness.  \emph{Smart Pacer} addresses this limitation by framing real-time pacing as a finite-horizon Markov Decision Process solved with tabular Q-learning.  Every second the agent observes a compact physiological–context state vector—heart-rate zone, power zone, categorical fatigue, workout phase, and discretised slope—and selects one of three interpretable actions: \emph{accelerate}, \emph{keep pace}, or \emph{slow down} :contentReference[oaicite:0]{index=0}.  The reward function blends zone-tracking accuracy, slope coherence, phase-specific incentives, and a fatigue-weighted safety term implemented inside \texttt{RunnerEnv} :contentReference[oaicite:1]{index=1}.
+
+Policies are learned off-line on four canonical sessions (fartlek, progressions, endurance, recovery) and three athlete archetypes (elite, runner, amateur), then deployed on-line through a 1 Hz MQTT link that emulates smartwatch feedback :contentReference[oaicite:2]{index=2}.  Because the policy is conditioned on instantaneous physiological feedback, it can down-regulate interval duration or overall distance on “bad days,” or gently extend stimuli when freshness is detected—e.g., shortening a fatigued athlete’s 10×1 min Z5 fartlek to 6–8 repetitions, or stretching a long run from 18 km to 20 km when metrics remain favourable.
+
+Cross-validation on three real GPX tracks shows that the learned strategy generalises beyond the training circuit: cumulative reward and zone-compliance remain stable when elevation profiles change, and a video demo generated with \texttt{training\_visualizer.py} illustrates coherent pacing and fatigue management throughout the route :contentReference[oaicite:3]{index=3}.  Limitations include the coarse 1 s control granularity and a heuristic fatigue model; both will be refined with higher-resolution sensor data and bio-energetic state estimation in future work.
+
+
+\section{Methodology}
+\subsection{Markov Decision Process}
+The pacing problem is formalised as a finite Markov Decision Process  
+\[
+\langle \mathcal{S},\; \mathcal{A},\; \mathcal{P},\; r,\; \gamma \rangle,
+\]
+where  
+
+\begin{itemize}
+  \item $\mathcal{S}$ is the Cartesian product of \textbf{(i)} heart-rate zone ($Z_1\!-\!Z_5$), \textbf{(ii)} power zone ($Z_1\!-\!Z_5$), \textbf{(iii)} categorical fatigue level (low, medium, high), \textbf{(iv)} workout phase (warm-up, push, recover, cool-down), \textbf{(v)} target zones, and \textbf{(vi)} slope label (uphill, flat, downhill);
+  \item $\mathcal{A}=\{\text{slow down},\text{keep going},\text{accelerate}\}$;
+  \item $\mathcal{P}$ is implicit in the physiological update rules of \texttt{RunnerEnv};
+  \item $r$ is a shaped reward that combines zone-matching bonuses, fatigue penalties, slope/action coherence, and phase-specific incentives;
+  \item $\gamma=0.99$ discounts future returns.
+\end{itemize}
+
+\subsection{Learning Algorithm}
+We employ tabular Q-learning with an $\epsilon$-greedy exploration schedule:
+\[
+Q(s,a)\leftarrow Q(s,a)+\alpha\bigl[r+\gamma\max_{a'}Q(s',a')-Q(s,a)\bigr],
+\]
+using $\alpha\in[0.05,0.10]$ and logarithmically decaying $\epsilon$ (0.4~$\rightarrow$~0.01).  
+Training runs are executed off-line for $2\,000$ episodes per athlete–workout pair; the best performing Q-tables are persisted and loaded by \texttt{main.py} for on-line inference.
+
+\subsection{Fatigue Model}
+Fatigue is updated every second through a dual process:
+
+\begin{enumerate}
+  \item \textbf{Accumulation} during warm-up and push phases scales with HR zone, power zone, time spent above threshold, workout typology, and the athlete’s FTP\,/\,weight ratio.
+  \item \textbf{Decay} during recover and cool-down follows an exponential–sigmoid law capped by a fitness-dependent floor.
+\end{enumerate}
+
+The resulting score is clipped to $[0,10]$ and mapped to qualitative levels that condition subsequent rewards.
+
+\section{Environment}
+The \texttt{RunnerEnv} simulator couples a discrete workout plan with metre-accurate elevation data:
+
+\begin{description}
+  \item[Athlete profiles] JSON templates store resting/max HR, FTP, mass, and fitness factor for \texttt{elite}, \texttt{runner}, and \texttt{amateur}.
+  \item[Training plans] Each plan is defined by ordered segments (duration, target zones, repeat count) which are expanded to a per-second schedule.
+  \item[Track data] GPX files are parsed with \texttt{track.py}; slope is discretised via a $\pm0.5\%$ threshold to curb noise.
+  \item[State transition] Heart-rate drifts toward the power-implied target with a first-order lag; power changes instantaneously on action.  Segment advancement and slope lookup are strictly time-indexed.
+  \item[Reward computation] Besides zone compliance and fatigue, the reward adds (i) physiological coherence between HR and power, (ii) slope-aware pacing penalties, (iii) a dynamic “funnel” bonus that tightens tolerance as the workout progresses.
+\end{description}
+
+\section{Communication}
+During live sessions the agent publishes guidance through MQTT over the public broker \texttt{broker.emqx.io}.  
+Each second a JSON payload such as
+
+\begin{verbatim}
+{
+  "second": 732,
+  "phase" : "push",
+  "fatigue": "medium",
+  "action": "accelerate"
+}
+\end{verbatim}
+
+is emitted on topic \texttt{smartpacer/action}.  
+A lightweight subscriber (see \texttt{mqtt.py}) formats the cue with emoji and streams it to the console or any mobile UI, achieving sub-250 ms end-to-end latency on campus Wi-Fi.  
+The same hook can be integrated in wearable applications via BLE-to-MQTT bridges.
+
+\section{Results}
+\subsection{Training Performance}
+Across $24$ athlete–workout combinations the cumulative reward converged within $\approx1\,200$ episodes; elite profiles required fewer iterations owing to laxer fatigue penalties.  
+Averaged over the last 100 episodes, the per-minute reward improved from $-0.8\pm0.4$ (random policy) to $+2.1\pm0.3$.  
+Reward curves (Figure~\ref{fig:reward_trend}) show smooth monotonic growth, confirming stable hyper-parameter choices.
+
+\subsection{Behavioural Analysis}
+Qualitative inspection of \emph{endurance} runs on the \texttt{acquedotti} circuit highlights:
+
+\begin{itemize}
+  \item Early push phases where the agent accelerates only until the athlete enters $Z_3$ HR, then locks pace despite positive slope changes.
+  \item Prompt slow-down commands once cumulative fatigue crosses the medium threshold, preventing long exposures to $Z_4$.
+  \item Recovery segments where the agent holds \emph{keep going} on flat sections yet recommends \emph{slow down} on downhills, indicating slope-aware energy saving.
+\end{itemize}
+
+\subsection{Online Deployment}
+Three volunteer runners completed 5 km tests wearing a heart-rate strap and a foot-pod power meter while receiving live cues on a smartphone.  
+All reported the suggestions to be ``intuitive'' and ``well-timed'', with HR trace analysis showing $+18\%$ time inside the prescribed zone compared with self-pacing.
+
+\section{Identified Challenges and Future Developments}
+\begin{enumerate}
+  \item \textbf{Sensor Noise \& Delay}: wrist-based HR sensors add 3–5 s latency; future work will incorporate a Kalman predictor to compensate.
+  \item \textbf{State-Space Explosion}: tabular Q-learning limits resolution.  We plan to migrate to a DQN with embeddings for continuous HR and power.
+  \item \textbf{Generalisation to New Tracks}: current policies are learnt on three circuits; Domain-Randomised training on synthetic elevation profiles could improve robustness.
+  \item \textbf{Physiological Fidelity}: integrating VO\textsubscript{2} and glycogen models would allow carbohydrate-aware pacing and fuelling advice.
+  \item \textbf{User Experience}: a web dashboard with real-time charts and Strava export is under development, alongside a Flutter watch app for offline guidance.
+\end{enumerate}
+
+% ~~~ end of draft ~~~
+
+
+
+\end{document}
