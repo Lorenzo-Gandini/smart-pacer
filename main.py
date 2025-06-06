@@ -4,13 +4,13 @@ import os
 import math
 import csv
 from runner_env import RunnerEnv, load_json, ACTIONS
-from datetime import datetime
+from utils import *
 
 import paho.mqtt.client as mqtt
 
-
-# ==== FUNCTIONS ==== #
+# Start the script, asking the users for input parameters. These will be used to configure the training session looking for the closest athlete profile.
 def begin_session():
+    
     print("\n👤 Let's configure your session.")
     
     def ask_float(prompt):
@@ -37,83 +37,12 @@ def begin_session():
         "fitness_factor": fitness
     }
 
-    print("\n🏃‍♂️ Choose where you want to run:")
-    print("1. Mantova - Belfiore")
-    print("2. Mantova - Giro dei 3 laghi")
-    print("3. Roma - Parco degli Acquedotti")
-    
-    circuit_map = {
-        "1": "belfiore",
-        "2": "tre_laghi",
-        "3": "acquedotti"
-    }
-    circuit_choice = input("Enter the number of the circuit [1-3]: ").strip()
-    circuit = circuit_map.get(circuit_choice, "acquedotti")  
-
-    print("\n🏋️ Choose your training session:")
-    print("1. Fartlek")
-    print("2. Progressions")
-    print("3. Endurance")
-    print("4. Recovery")
-
-    training_map = {
-        "1": "fartlek",
-        "2": "progressions",
-        "3": "endurance",
-        "4": "recovery"
-    }
-
-    choice = input("Enter the number of the training type [1-4]: ").strip()
-    training_name = training_map.get(choice, "fartlek")  # default fallback
+    circuit = ask_circuit()
+    training_name = ask_training()
+    mqtt_communication = ask_mqtt()
 
     print(f"\n✅ Configuration complete! Now let's train !\n")
-    return input_athlete, training_name, circuit
-
-def send_mqtt(state, action, client, topic):
-    payload = json.dumps({
-        "second": state.get("segment_index", 0),
-        "phase": state.get("phase_label", "unknown"),
-        "fatigue": state.get("fatigue_level", "unknown"),
-        "action": action
-    })
-    client.publish(topic, payload)
-    print(f"📤 MQTT message : {payload}")
-
-def euclidean_distance(p1, p2):
-    return math.sqrt(sum((p1[k] - p2[k])**2 for k in p1))
-
-def get_profile_label(athlete):
-    '''Load the correct q-table based on the athlete and training profile'''
-    base_profiles = load_json("data/athletes.json")
-    distances = {
-        label: euclidean_distance(athlete, base_profiles[label])
-        for label in base_profiles
-    }
-    return min(distances, key=distances.get)
-
-def get_training_label(training_name):
-    '''Load the correct q-table based on the training type'''
-    trainings = load_json("data/trainings.json")
-    training = trainings[training_name]
-    return training
-
-def load_qtable(profile_label, training_type):
-    q_table_path = f"data/q-table/q_table_{profile_label}_{training_type}.json"
-    with open(q_table_path) as f:
-        raw_q_table = json.load(f)
-    Q = {eval(k): v for k, v in raw_q_table.items()}
-
-    return Q
-
-def get_state_key(state):
-    return (
-        state['HR_zone'],
-        state['power_zone'],
-        state['fatigue_level'],
-        state['phase_label'],
-        state['target_hr_zone'],
-        state['target_power_zone'],
-        state['slope_level']    )
+    return input_athlete, training_name, circuit, mqtt_communication
 
 def append_data(state, action, reward):
     '''Append data to the session data list'''
@@ -130,49 +59,9 @@ def append_data(state, action, reward):
         'reward': reward,
         'fatigue_score': env.fatigue_score,
     })
-
-def save_training_session(session_data, athlete_profile, training_type, track_data, circuit_name):
-    '''Save the training session data to a CSV file'''
-    os.makedirs("training_logs", exist_ok=True)
-    filename = f"training_logs/{athlete_profile}_{training_type}_{circuit_name}.csv"
     
-    fieldnames = [
-        'second', 
-        'phase', 
-        'fatigue', 
-        'action', 
-        'HR_zone', 
-        'power_zone', 
-        'target_HR', 
-        'target_power',
-        'fatigue_score',
-        'fatigue_level',
-        'slope', 
-        'reward', 
-        'lat', 
-        'lon', 
-        'elevation'
-    ]
-    
-    with open(filename, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        
-        for i, data in enumerate(session_data):
-            if i < len(track_data):
-                data.update({
-                    'lat': track_data[i].get('lat'),
-                    'lon': track_data[i].get('lon'),
-                    'elevation': track_data[i].get('elevation', None)
-                })
-            writer.writerow(data)
-    
-    print(f"\n📊 Data saved in: {filename}")
-    return filename
-
-
 # ==== MAIN SIMULATION ==== #
-input_athlete, training_name, circuit_name = begin_session()
+input_athlete, training_name, circuit_name, mqtt_communication = begin_session()
 profile_label = get_profile_label(input_athlete)
 circuit = load_json(f"data/maps/{circuit_name}.json")
 training = get_training_label(training_name)
@@ -186,9 +75,7 @@ training_completed = False
 total_reward = 0
 session_data = []
 
-MQTT_COMMUNICATION = False # Set to True to enable MQTT communication 
-
-if MQTT_COMMUNICATION:
+if mqtt_communication:
     client = mqtt.Client()
     client.connect("broker.emqx.io", 1883, 60)
     topic = "smartpacer/action"
@@ -205,10 +92,9 @@ while not training_completed:
 
     append_data(state, action, reward)
 
-    if MQTT_COMMUNICATION:
+    if mqtt_communication:
         send_mqtt(state, action, client, topic)
         time.sleep(0.5)
-
 
 save_training_session(session_data, profile_label, training_name, circuit, circuit_name)    
 print(f"\n🏁 Training completed! Total reward: {total_reward:.2f}")

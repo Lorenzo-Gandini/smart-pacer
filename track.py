@@ -1,34 +1,10 @@
 '''
-This file contains functions to extract and process GPX data, calculate distances, slopes, and save the data to a JSON file.
+This file reads a GPX (GPS Exchange Format) and processes its track data to extract detailed information about each GPS point. 
+For each point, it extracts latitude, longitude, elevation, and timestamp and calculates distance between two points using the haversine formula, computes the time difference in seconds, and derives the speed in meters per second. Extracts also elevation and slope.
 '''
 
 import gpxpy
-import matplotlib.pyplot as plt
-import folium
-import json
-from datetime import datetime
-from math import radians, cos, sin, asin, sqrt
-
-
-def haversine(lat1, lon1, lat2, lon2):
-    '''Calculate the great-circle distance between two points on the Earth specified in decimal degrees'''
-    R = 6371000  #Earth radius in meters
-    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-    dlat = lat2 - lat1
-    dlon = lon2 - lon1
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2 #calculate the square of half the chord length between the points
-    c = 2 * asin(sqrt(a))
-    return R * c
-
-def slope_level(delta_elev):
-    ''' Labels the slope based on elevation change '''
-    if delta_elev > 0.5:
-        return "uphill"
-    elif delta_elev < -0.5:
-        return "downhill"
-    else:
-        return "flat"
-
+from utils import haversine, slope_level, save_to_json
 
 def parse_gpx(file_path):
     with open(file_path, 'r') as gpx_file:
@@ -72,17 +48,13 @@ def parse_gpx(file_path):
 
     return data
 
-def save_to_json(data, output_path):
-    with open(output_path, 'w') as f:
-        json.dump(data, f, indent=2)
-    print(f"💾 File saved in '{output_path}'")
-
 
 if __name__ == "__main__":
-    circuit = "tre_laghi"  
-    gpx_file = f"data/maps/{circuit}.GPX"
-    output_path = f"data/maps/{circuit}.json"
-    data = parse_gpx(gpx_file)
+
+    circuit = "tre_laghi"                       # Define the name of the circuit
+    gpx_file = f"data/maps/{circuit}.GPX"       # Name of the gpx file
+    output_path = f"data/maps/{circuit}.json"   # Output file
+    data = parse_gpx(gpx_file)                  # Parse the GPX file
 
     elevations = [p["elevation"] for p in data if p["elevation"] is not None]
     save_to_json(data, output_path)
