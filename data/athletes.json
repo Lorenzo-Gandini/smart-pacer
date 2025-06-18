@@ -16,7 +16,7 @@
       "fitness_factor": 1.0
     },
 
-    "amatour": {
+    "amateur": {
       "HR_rest": 60,
       "HR_max": 175,
       "FTP": 280,
