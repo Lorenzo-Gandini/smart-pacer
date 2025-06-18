@@ -135,7 +135,7 @@
 # # ------------------------------------------------------------------------------
 # # MAIN
 # if __name__ == "__main__":
-#     athlete_profiles = ["elite", "runner", "amatour"]
+#     athlete_profiles = ["elite", "runner", "amateur"]
 #     training_plans = ["fartlek", "progressions", "endurance", "recovery"]
 
 #     # Create folder for saving results
@@ -181,7 +181,6 @@ from tqdm import tqdm
 #     {"alpha": 0.05, "gamma": 0.99, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
 #     {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.1, "min_epsilon": 0.01, "decay_rate": 0.98},
 
-#     # 🧪 Nuove combinazioni suggerite
 #     {"alpha": 0.08, "gamma": 0.995, "initial_epsilon": 0.25, "min_epsilon": 0.01, "decay_rate": 0.98},
 #     {"alpha": 0.05, "gamma": 0.995, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.985},
 #     {"alpha": 0.03, "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.997},
@@ -191,9 +190,9 @@ from tqdm import tqdm
 # ]
 
 top_configs = [
-    # Amatour
-    ("amatour", {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.1, "min_epsilon": 0.01, "decay_rate": 0.98}),
-    ("amatour", {"alpha": 0.05, "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.985}),
+    # amateur
+    ("amateur", {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.1, "min_epsilon": 0.01, "decay_rate": 0.98}),
+    ("amateur", {"alpha": 0.05, "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.985}),
 
     # Runner
     ("runner", {"alpha": 0.1, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99}),
@@ -205,7 +204,7 @@ top_configs = [
 ]
 
 
-num_episodes = 2000  # puoi aumentarlo dopo i test
+num_episodes = 2000
 athletes = load_json("data/athletes.json")
 trainings = load_json("data/trainings.json")
 track = load_json("data/maps/acquedotti.json")
@@ -251,29 +250,41 @@ def train_combo(args):
     env = RunnerEnv(athlete, training, track_data=track, verbose=False)
 
     for episode in range(num_episodes):
+        #reset environment at the beginning of each episode
         state = env.reset()
         state_key = get_state_key(state)
         total_reward = 0
-        done = False
+        done = False 
 
         while not done:
+            # Initialize Q-values for unseen state
             if state_key not in Q:
                 Q[state_key] = {a: 0.0 for a in ACTIONS}
+
             action = choose_action(Q, state_key, epsilon)
+            
+            #take the action, observe the next state, reward, and done flag
             next_state, reward, done = env.step(action)
             next_key = get_state_key(next_state)
+            
+            # Initialize Q-values for unseen next state
             if next_key not in Q:
                 Q[next_key] = {a: 0.0 for a in ACTIONS}
 
+            #Q-learning update rule, take the max
             best_next = max(Q[next_key].values())
             Q[state_key][action] += alpha * (reward + gamma * best_next - Q[state_key][action])
+
+            # Transition to the next state
             state_key = next_key
             total_reward += reward
 
+        # Store the total reward of this episode
         episode_rewards.append(total_reward)
+        # Decay exploration rate for next episode
         epsilon = max(min_epsilon, epsilon * decay_rate)
 
-    # Save Q-table
+    #save  the Q-table
     qpath = f"{base_folder}/q-tables/q_{athlete_profile}_{training_plan}_{suffix}.json"
     with open(qpath, "w") as f:
         json.dump({str(k): v for k, v in Q.items()}, f, indent=2)
