@@ -175,9 +175,9 @@ class RunnerEnv:
         ''' Compute the reward based on the current state, action taken, and athlete's performance.
         - ftp_per_kg: it's a score used to determine the athlete's level based on their FTP relative to their weight. Since FTP is a measure of the maximum power output an athlete can sustain, dividing it by weight gives a relative performance metric (if you are lighter and you have the seme FTP of a heavier athlete, you are more efficient).
         - Zone Matching Reward : based on the difference between current HR and Power zones and their target zones. Calculate the difference between current zones and target zones and assigna reward if they match. Each zones of hr and power have a different reward based on the difference (a large difference results in a negative reward).
-        - Fatigue Penalty: based on the athlete's profiles, are defined different tresholds (an elite can manage better the fatigue than an amatour). based on them, a penalty is applied to the reward if the fatigue score exceeds certain levels. 
-        - Physiological coherence : if the difference between HR and Power zones is within expected limits, a bonus is applied, otherwise a penalty is applied. An elite athlete should be able to maintain a smaller difference than an amatour. 
-        - Phase-specific bonuses : different phases of the training session have different expected actions and rewards. For example, during the warmup phase, accelerating when below target HR is rewarded, while slowing down is penalized. In the push phase, accelerating when below target HR is rewarded (the goal is to reach that zone), while slowing down when above target HR is penalized (a behaviour that we expect from an amatour when suffers from a high fatigue).
+        - Fatigue Penalty: based on the athlete's profiles, are defined different tresholds (an elite can manage better the fatigue than an amateur). based on them, a penalty is applied to the reward if the fatigue score exceeds certain levels. 
+        - Physiological coherence : if the difference between HR and Power zones is within expected limits, a bonus is applied, otherwise a penalty is applied. An elite athlete should be able to maintain a smaller difference than an amateur. 
+        - Phase-specific bonuses : different phases of the training session have different expected actions and rewards. For example, during the warmup phase, accelerating when below target HR is rewarded, while slowing down is penalized. In the push phase, accelerating when below target HR is rewarded (the goal is to reach that zone), while slowing down when above target HR is penalized (a behaviour that we expect from an amateur when suffers from a high fatigue).
         - Pacing-coherence with slope : This is a bonus or penalty based on the slope of the track and the action taken.
         - Capacity scaling : The capacity adjustment is a penalty that represents the athlete's ability to sustain high power outputs relative to their FTP. for each hr zone a penalty is defined, which is scaled by the athlete's FTP per kg. We do this because a lighter athlete with the same FTP as a heavier athlete is more efficient, so they should have a lower penalty.
         - Dynamic tolerance & funnel : The tolerance shrinks as the session progresses, and a funnel bonus is applied when the athlete is in the target zones. The funnel bonus is a bonus that represents the athlete's ability to maintain the target zones as the session progresses. 
@@ -200,7 +200,7 @@ class RunnerEnv:
         elif ftp_per_kg > 4.0:
             athlete_level = "runner"
         else:
-            athlete_level = "amatour"
+            athlete_level = "amateur"
 
         # Zone Matching Reward
         hr_diff = abs(hr_zone - target_hr)
@@ -211,7 +211,7 @@ class RunnerEnv:
         # Fatigue penalty
         thresholds = {"elite":{"low":5.0,"medium":7.0},
                     "runner":{"low":4.0,"medium":6.0},
-                    "amatour":{"low":3.0,"medium":5.0}}[athlete_level]
+                    "amateur":{"low":3.0,"medium":5.0}}[athlete_level]
         fat = self.fatigue_score
         if fat <= thresholds["low"]:
             fatigue_penalty = 0.0
@@ -222,7 +222,7 @@ class RunnerEnv:
 
         # Physiological coherence
         diff = abs(hr_zone - power_zone)
-        expected = {"elite":0.5, "runner":1.0, "amatour":1.5}[athlete_level]
+        expected = {"elite":0.5, "runner":1.0, "amateur":1.5}[athlete_level]
         coherence_bonus = 1.0 if diff <= expected else -1.0 * (diff - expected)
 
         # Phase-specific bonuses
@@ -272,16 +272,15 @@ class RunnerEnv:
             funnel_bonus = 0.0
         self._prev_in_zone = in_zone
 
-        # Combinazione finale
+        # Final reward calculation
         total = (0.4*hr_reward + 0.4*power_reward + 0.3*coherence_bonus +
                 0.2*phase_bonus + fatigue_penalty + capacity_adj +
                 slope_penalty + funnel_bonus)
 
-        # Penalità fisiologica complessiva se fatica alta
         fatigue_decay = 1.0 - min(self.fatigue_score / 200.0, 0.4)  # max decay -40%
         total *= fatigue_decay
 
-        # Rumore casuale
+        # Random noise to the reward to simulate real-world variability
         total += random.uniform(-0.1, 0.1)
         return total
 
