@@ -163,8 +163,4 @@ In each frame you’ll see:
 
 These animations give an at-a-glance view of how the agent paces itself, where it pushes harder, and when recovery phases kick in.  
 
-Videos can be found with the path:
-
-```bash
-data/video/[profile]_[training]_[circuit].mp4
-```
+Videos can be found inside the video folder(./data/video/).
