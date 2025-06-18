@@ -24,13 +24,21 @@ class PacerLogger:
         }
         
         phase = payload.get("phase", "unknown")
-        return (f"\n{phase_icons.get(phase, '❓')} {phase.upper()} "
-            f"| 🕒 Second: {int(payload.get('second', 0)/60)}:{payload.get('second', 0)%60:02d}\n"
-            f"{action_icons.get(payload.get('action', ''), '🔄 ')} {payload.get('action', '').upper()}\n"
-            f"💓 HR Zone: {payload.get('phase', '?')} | 🏋️ Power Zone: {payload.get('fatigue', '?')}\n"
-            f"😴 Fatigue: {payload.get('fatigue', 'unknown').upper()}" )
+        mins, secs = divmod(int(payload.get("second", 0)), 60)
+        hr_zone    = payload.get("hr_zone", "?")
+        power_zone = payload.get("power_zone", "?")
+        fatigue    = payload.get("fatigue", "unknown").upper()
+    
+        return (
+            f"{phase_icons.get(phase)} {phase.upper()}\n"
+            f"🕒 Second: {mins}:{secs:02d}\n"
+            f"{action_icons.get(payload.get('action',''))} {payload.get('action','').upper()}\n"
+            f"💓 HR Zone: {hr_zone}\n"
+            f"🏋️ Power Zone: {power_zone}\n"
+            f"😴 Fatigue: {fatigue}\n"
+        )
 
-# Callback quando riceve un messaggio
+
 def on_message(client, userdata, msg):
     try:
         payload = json.loads(msg.payload.decode())
