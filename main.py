@@ -1,9 +1,5 @@
-import json
 import time
-import os
-import math
-import csv
-from runner_env import RunnerEnv, load_json, ACTIONS
+from runner_env import RunnerEnv, load_json
 from utils import *
 
 import paho.mqtt.client as mqtt
@@ -27,7 +23,7 @@ def begin_session():
     hr_max = ask_float("Maximum heart rate (HR_max)")
     ftp = ask_float("Functional Threshold Power (FTP)")
     weight = ask_float("Body weight in kg")
-    fitness = ask_float("Fitness factor (0.7=elite, 1.0=runner, 1.3=amatour)")
+    fitness = ask_float("Fitness factor (0.7=elite, 1.0=runner, 1.3=amateur)")
 
     input_athlete = {
         "HR_rest": hr_rest,
