@@ -1,0 +1,127 @@
+The pacing problem is formalised as a finite Markov Decision Process  
+\[
+\langle \mathcal{S},\; \mathcal{A},\; \mathcal{P},\; r,\; \gamma \rangle,
+\]
+where  
+\begin{itemize}
+  \item \(\mathcal{S}\) is the state space, a tuple of seven components that capture the athlete’s physiological and contextual status.
+  \item \(\mathcal{A}\) is the action set, consisting of three discrete commands: \emph{slow down}, \emph{keep going}, and \emph{accelerate}.
+  \item \(\mathcal{P}(s'|s,a)\) is the transition dynamics, which describe how the state evolves given an action.
+  \item \(r(s,a)\) is the reward function, which quantifies the desirability of each state–action pair.
+  \item \(\gamma\) is the discount factor, controlling how future rewards are valued relative to immediate ones.
+\end{itemize}
+
+The MDP is implemented in the \texttt{RunnerEnv} class, which simulates the athlete's workout environment and decision-making process. The agent interacts with this environment by observing the current state, selecting an action, and receiving a reward while transitioning to a new state.
+
+
+\subsection{State space \(\mathcal{S}\)}\label{subsec:state_space}
+The states should encapsulate the athlete's physiological state in a specific moment, which is defined by the training program and the context of where the athlete is running. The components of the state space \(\mathcal{S}\) are summarised in Table~\ref{tab:state_space}.
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Component}        & \textbf{Meaning}                                        \\ \midrule
+\verb|Heart Rate|         & Instantaneous heart-rate zone (Z1–Z5)                   \\
+\verb|Power Zone|         & Instantaneous power zone (Z1–Z5)                        \\
+\verb|Fatigue|            & Categorical fatigue (\emph{low/medium/high})            \\
+\verb|Phase|              & Workout phase (warm-up, push, recover, cool-down)       \\
+\verb|Target HR_zone|     & HR targets of current training segment                           \\ 
+\verb|Target Power_zone|  & Power targets of current training segment                        \\
+\verb|Slope|              & Terrain label (\emph{uphill/flat/downhill})             \\ \bottomrule
+\end{tabular}
+
+\caption{State space \(\mathcal{S}\) components.}
+
+\label{tab:state_space}
+\end{table}
+
+\subsection{Action set \(\mathcal{A}\).}
+The three admissible actions that an athlete can take during a workout are defined as:
+\begin{itemize}
+  \item \texttt{slow down} – reduce pace to lower heart rate and power.
+  \item \texttt{keep going} – maintain current pace, allowing physiological drift.
+  \item \texttt{accelerate} – increase pace to raise heart rate and power.
+\end{itemize}
+
+
+\subsection{Transition dynamics \(\mathcal{P}\)}
+The most intricate component of the MDP is define the state–transition kernel, i.e.\ how the physiological and contextual state of the athlete evolves once an action is taken. In my simulation this logic resides in \verb|RunnerEnv.step()|, which calls four update routines every second in the order shown below:
+
+\begin{enumerate}
+  \item \verb|_update_power_zone(action)| – the chosen action (\emph{slow down}, \emph{keep}, or \emph{accelerate}) instantaneously shifts the target wattage and therefore the power zone. In real life, when you accelerate, you immediately increase your power output, while when you slow down, you immediately decrease it. 
+  \item \verb|_update_hr_zone(action)| – like the power zone update, given the action, this function updates the target heart rate zone. The heart rate is a lagged variable, so it will not change immediately, but the target zone is updated to reflect the action taken. In real life, the heart rate zone, does not change immediately since it's an interval of values, but it will drift towards the target zone over time.
+  \item \verb|_update_fatigue(action)| – a dual-process model accumulates or dissipates fatigue depending on HR, power, workout phase, and the athlete's profile (elite/runner/amateur);
+  \item \verb|_advance_segment()| – the global time index is incremented, the current workout segment is updated, and the local slope label is re-computed from the GPX elevation trace.  
+\end{enumerate}
+
+Applied sequentially, these rules deterministically map the current pair \((s,a)\) to a unique next state \(s'\) at a granularity of 1 s; stochasticity is confined to the reward function, which injects small uniform noise to break ties.
+
+\subsubsection{Reward function \(r(s,a)\)}
+The reward function, together with the \verb|_update_fatigue(action)| routine (see~\ref{subsubsec:fatigue}), forms the core of the simulator’s logic. These components determine how the agent is incentivised to follow the training plan while accounting for the athlete’s physiological state. The reward function is implemented in the \verb|compute_reward()| method of \verb|runner_env.py|, and outputs a scalar value that quantifies the agent’s performance in the current state and it's given by the sum of eight domain-specific terms:
+
+\begin{enumerate}
+  
+  \item \textbf{Zone–matching accuracy} - the absolute distance between the current and target HR / power zones is mapped to a piece-wise score \(\{+2.0,+0.5,-1.0,-2.5,-4.0\}\); HR and power contributions are then blended as \(0.4\,r_{\text{HR}} + 0.4\,r_{\text{Power}}\).
+
+  \item \textbf{Fatigue penalty} – \textbf{Fatigue penalty} – The simulator keeps a continuous \verb|fatigue_score| \(f \in [0,10]\). Two athlete-dependent thresholds partition this range:
+    \[
+    (\text{elite})\;5\le f<7,\qquad
+    (\text{runner})\;4\le f<6,\qquad
+    (\text{amateur})\;3\le f<5 .
+    \]
+
+    \begin{itemize}
+    \item \emph{Green zone} \((f<\text{low})\): no penalty is applied.  
+    \item \emph{Yellow zone} \((\text{low}\le f<\text{medium})\): the
+            reward is reduced linearly with slope \(-1\)  
+            \(\bigl(\,r_{\mathrm{fat}}=-1\cdot(f-\text{low})\bigr)\).
+    \item \emph{Red zone} \((f\ge\text{medium})\): the penalty steepens to
+            slope \(-2\)  
+            \(\bigl(\,r_{\mathrm{fat}}=-2\cdot(f-\text{medium})\bigr)\),
+            strongly discouraging work when the athlete is excessively
+            fatigued.
+    \end{itemize}
+
+    This piecewise-linear scheme allows each athlete category to tolerate a proportionate amount of fatigue before the agent starts subtracting reward, and applies a sharper deterrent once a critical level is exceeded.
+
+
+  \item \textbf{Physiological coherence} – The agent computes \(\Delta_Z=\lvert Z_{\text{HR}}-Z_{\text{Power}}\rvert\). If \(\Delta_Z\) does not exceed the athlete-specific tolerance \(\{0.5,1.0,1.5\}\), a bonus of \(+1.0\) is awarded; otherwise a penalty \(-1.0\times(\Delta_Z-\text{tolerance})\) is applied.  This term encourages consistency between cardiovascular strain (HR zone) and mechanical output (power zone) without overpowering the other rewards.
+
+  \item \textbf{Phase–action consistency} – This function reward the agent for taking actions that are consistent with the current phase of the workout.  For example, in the \emph{warm-up} phase, accelerating while still below the target HR is mildly encouraged \((+0.5)\), while braking is discouraged (-1); in the \emph{recover} phase, slowing down from supra-threshold HR receives +1 while accelerating is harshly penalised (-2).:
+
+  \item \textbf{Terrain-aware pacing} – How the decision taken while the slope is changing can have different impact. Accelerating on an
+        \emph{uphill} costs -2.0, braking on a \emph{downhill} -0.5; all other combinations are neutral.
+
+  \item \textbf{Capacity scaling} –  The penalty for exceeding the athlete's \(Z_{\text{HR}}\) is attenuated by the efficiency factor (which is defined as \(\min(1,\text{FTP}/(6\,\text{kg}))\) ), so that lighter or fitter athletes are less penalised for visiting high zones as it should be in real-life.
+  
+  \item \textbf{Dynamic funnel bonus} – The funnel bonus is a dynamic reward that encourages the agent to maintain a precise pacing as the workout progresses.  It is defined as follows:
+        \begin{itemize}
+          \item During the first half of the workout, the agent receives +2.0 for entering the target zone and +0.5 for remaining inside.
+          \item After halfway, the tolerance shrinks to \(\le 0\), meaning that entering the target zone gives +2.0 only once, while remaining inside yields +0.5.
+        \end{itemize}
+        This promotes sustained precision pacing.
+
+  \item \textbf{Global fatigue decay \& stochasticity.} -  After all partial rewards are summed, the total is scaled by a fatigue-dependent factor \(1-\min(f/200,0.4)\), which can attenuate the reward by at most \(40\,\%\) when \(f\!=\!10\).  
+  Finally, a zero-mean uniform noise \(\mathcal{U}(-0.1,0.1)\) is added to break deterministic ties and simulate real-world variability. 
+
+\end{enumerate}
+
+The final scalar is therefore
+\[
+r = 0.4\,r_{\text{HR}} + 0.4\,r_{\text{Power}}
+     + 0.3\,r_{\mathrm{coh}} + 0.2\,r_{\mathrm{phase}}
+     + r_{\mathrm{fatigue}} + r_{\mathrm{cap}}
+     + r_{\mathrm{slope}} + r_{\mathrm{fun}},
+\]
+followed by the multiplicative decay and noise injection, as visible at the end of the \texttt{compute\_reward} method in \texttt{runner\_env.py}.
+
+
+\subsubsection{Fatigue model}\label{subsubsec:fatigue}
+The fatigue is implemented as a dual-process system that realistically model both the accumulation of fatigue during intense efforts and its dissipation during recovery, adapting dynamically to different workout intensities, athlete profiles, and training modalities. 
+
+\begin{itemize}
+    \item \textbf{Recovery and Cooldown Phases:} During these phases, fatigue dissipates through a combination of exponential and sigmoid decay, reflecting the natural recovery process. The decay rate and minimum fatigue floor are modulated by the athlete's fitness factor, ensuring that fitter athletes recover more efficiently. Constants are used to control the rate of decay and to prevent fatigue from dropping below a realistic minimum.
+    \item \textbf{Warmup and Push Phases:} In active phases, fatigue accumulates based on the current heart rate (HR) and power zones. The accumulation rate is determined by zone-specific gain constants, which are further adjusted for the type of training session (e.g., interval, fartlek, endurance), the athlete's functional threshold power (FTP), and the time spent in high-intensity zones. Additional scaling is applied if both HR and power are in high zones, and a small random noise is introduced to simulate physiological variability.
+    \item \textbf{Score Capping and Labeling:} The resulting fatigue score is bounded between 0 and 10. Based on this score, a qualitative fatigue level (\emph{low}, \emph{medium}, or \emph{high}) is assigned, which is then used in the state representation and reward calculation.
+\end{itemize}
+

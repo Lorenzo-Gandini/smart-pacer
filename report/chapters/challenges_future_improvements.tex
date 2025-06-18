@@ -1,0 +1,23 @@
+\section{Limitations and Future Improvements}\label{sec:limitations}
+
+\subsection{State-space explosion}
+The current Markov model already spans seven discrete variables, yielding several thousand reachable combinations.  Extending realism would require additional factors — e.g.\ \emph{weather} (temperature, humidity, wind) and \emph{surface type} (asphalt, track, trail, grass). Although essential for real-world fidelity, every new dimension inflates the state complexity.
+
+\subsection{Richer athlete profiles}
+Present profiles depend on basic informations and a FTP valu. A more faithful description would incorporate sex, age, injury history, recent training load, previous-night sleep quality, HRV-derived recovery indices and update them with the evolution of the training process. 
+Such metadata would enable session prescriptions that respect female hormonal cycles, age-related recovery kinetics, and cumulative muscle stress.
+
+\subsection{Fatigue and reward refinement}
+Fatigue and reward terms were the hardest features to properly develop. In order to be even more realistic and coherent with real life behaviours could be implemented also a \textbf{Injury-risk term}, which will introduce a weekly load delta component that penalises abrupt increases in training load, reducing overuse-injury likelihood.
+Another possibl improvement could be the introduction of \textbf{sleep quality} and \textbf{recovery indices} as additional reward terms, which would allow the agent to adapt its pacing strategy based on the athlete's recovery status. This could be particularly useful for athletes with varying sleep patterns or those recovering from intense training sessions.
+
+\subsection{Temporal resolution}
+All decisions are issued at 1 Hz. Increasing the control loop to 5–10 Hz — or adopting event-driven updates triggered by rapid HR changes would shorten feedback latency and smooth the athlete's perceived guidance.
+
+\subsection{Personalised on-line learning}
+After the first ten sessions, enough data exist to characterise an individual pacing style.  Fine-tuning the policy with a small neural network head (e.g.\ policy-gradient or Soft Actor Critic) on top of the pre-trained Q-table would capture personal patterns without restarting from scratch.  
+Meta-learning techniques could further shrink the cold-start phase for new athletes.
+
+
+\bigskip
+Addressing the above points will increase both realism, athlete safety but most importantly will move \emph{Smart Pacer} closer to a deployable digital coach that can adapt to individual needs and conditions, providing a more effective and personalized training experience.

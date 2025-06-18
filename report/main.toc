@@ -1,0 +1,29 @@
+\contentsline {section}{\numberline {1}Abstract}{3}{section.1}%
+\contentsline {section}{\numberline {2}Formalization of the Markov Decision Process}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}State space \(\mathcal {S}\)}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Action set \(\mathcal {A}\).}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Transition dynamics \(\mathcal {P}\)}{4}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Reward function \(r(s,a)\)}{5}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Fatigue model}{6}{subsubsection.2.3.2}%
+\contentsline {section}{\numberline {3}MQTT Communication}{6}{section.3}%
+\contentsline {subsection}{\numberline {3.1}MQTT Messages}{7}{subsection.3.1}%
+\contentsline {section}{\numberline {4}Results}{7}{section.4}%
+\contentsline {section}{\numberline {5}Q-Learning Training Experiments}{8}{section.5}%
+\contentsline {subsection}{\numberline {5.1}First Experiment: 500 Episodes}{8}{subsection.5.1}%
+\contentsline {paragraph}{Endurance.}{10}{section*.5}%
+\contentsline {paragraph}{Fartlek.}{10}{section*.6}%
+\contentsline {paragraph}{Recovery.}{10}{section*.7}%
+\contentsline {paragraph}{Progression.}{10}{section*.8}%
+\contentsline {subsection}{\numberline {5.2}Second Experiment: 2000 Episodes}{10}{subsection.5.2}%
+\contentsline {paragraph}{Endurance.}{10}{section*.10}%
+\contentsline {paragraph}{Fartlek.}{10}{section*.11}%
+\contentsline {paragraph}{Recovery.}{10}{section*.12}%
+\contentsline {paragraph}{Progression.}{10}{section*.13}%
+\contentsline {subsection}{\numberline {5.3}Final Decision and Q-table Selection}{13}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Challenges and Future Developments}{13}{section.6}%
+\contentsline {section}{\numberline {7}Limitations and Future Improvements}{13}{section.7}%
+\contentsline {subsection}{\numberline {7.1}State-space explosion}{13}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Richer athlete profiles}{13}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Fatigue and reward refinement}{14}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Temporal resolution}{14}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Personalised on-line learning}{14}{subsection.7.5}%

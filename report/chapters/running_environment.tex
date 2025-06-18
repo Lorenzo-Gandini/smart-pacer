@@ -1,0 +1,9 @@
+The \texttt{RunnerEnv} simulator couples a discrete workout plan with metre-accurate elevation data:
+
+\begin{description}
+  \item[Athlete profiles] JSON templates store resting/max HR, FTP, mass, and fitness factor for \texttt{elite}, \texttt{runner}, and \texttt{amateur}.
+  \item[Training plans] Each plan is defined by ordered segments (duration, target zones, repeat count) which are expanded to a per-second schedule.
+  \item[Track data] GPX files are parsed with \texttt{track.py}; slope is discretised via a $\pm0.5\%$ threshold to curb noise.
+  \item[State transition] Heart-rate drifts toward the power-implied target with a first-order lag; power changes instantaneously on action.  Segment advancement and slope lookup are strictly time-indexed.
+  \item[Reward computation] Besides zone compliance and fatigue, the reward adds (i) physiological coherence between HR and power, (ii) slope-aware pacing penalties, (iii) a dynamic “funnel” bonus that tightens tolerance as the workout progresses.
+\end{description}

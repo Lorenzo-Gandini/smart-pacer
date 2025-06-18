@@ -1,0 +1,42 @@
+To simulate communication between the smartwatch application (acting as the smart pacer) and the user, an MQTT session was established. This setup allows the user to send data to the smartwatch app, which processes the information (by running the RunnerEnv) and provides feedback, including suggested actions.
+
+\subsection{MQTT Messages}
+The communication occurs over the topic \texttt{smartpacer/action} using the public broker \texttt{broker.emqx.io}.
+
+The payload of each MQTT message is a JSON object containing the following fields:
+\begin{itemize}
+  \item \texttt{second}: the current second of the workout;
+  \item \texttt{phase}: the current phase of the workout;
+  \item \texttt{fatigue}: the athlete's current fatigue level;
+  \item \texttt{action}: the action suggested by the smart pacer, which can be one of \emph{accelerate}, \emph{hold}, or \emph{ease}.
+\end{itemize}
+
+Each field is represented as a string, accompanied by a relevant emoji to enhance the user experience.
+
+An example of the messages are shown in figures .
+
+% \ref{fig:mqtt_message_example}.
+
+
+
+% \begin{figure}[H]
+%   \centering
+  
+%   \begin{subfigure}[position][height][inner pos]{width=0.2\textwidth}
+%     \centering
+%     \includegraphics[width=\textwidth]{images/mqtt_message_example_emoji.png}
+%     \caption{Example of an MQTT message with emojis.}
+%     \label{fig:mqtt_message_example_emoji}
+%   \end{subfigure}
+
+%   \begin{subfigure}[position][height][inner pos]{width=0.2\textwidth}
+%     \centering
+%     \includegraphics[width=\textwidth]{images/mqtt_message_example_emoji.png}
+%     \caption{Example of an MQTT message with emojis.}
+%     \label{fig:mqtt_message_example_emoji}
+%   \end{subfigure}
+
+%   \caption{Example of an MQTT message sent by the smart pacer.}
+%   \label{fig:mqtt_message_example}
+% \end{figure}
+
