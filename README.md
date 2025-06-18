@@ -163,4 +163,4 @@ In each frame you’ll see:
 
 These animations give an at-a-glance view of how the agent paces itself, where it pushes harder, and when recovery phases kick in.  
 
-Videos can be found inside the video folder(./data/video/).
+Videos can be found inside the video folder(https://github.com/Lorenzo-Gandini/smart-pacer/data/video).
