@@ -6,3 +6,7 @@ data/figures
 training_logs/old logs/
 data/old_data
 data/qtraining_DEF_backup
+data/qtraining_runs_20250620_episodes500
+data/qtraining_runs_20250620_episodes1000
+data/qtraining_runs_20250620_episodes2000
+data/training_log_DEF_20062025
