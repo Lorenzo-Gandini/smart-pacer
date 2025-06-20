@@ -30,24 +30,26 @@
 \newpage
 
 \section{Abstract}\label{abstract}
-Highly motivated runners, from elite to amateurs, soon discover that rigid training plans treat every day as equal—even though sleep, nutrition, hormonal cycles, stress, and travel routinely shift physiological readiness.  On a “bad day” an athlete may struggle to complete a prescribed 10 × 1 min Z5 fartlek, while on a “good day” the same session leaves untapped potential.  
+Highly motivated runners, from elite to amateurs, soon discover that rigid training plans treat every day as equal—even though sleep, nutrition, hormonal cycles, stress, and travel routinely shift physiological readiness. On a “bad day” an athlete may struggle to complete a prescribed 10 × 1 min Z5 fartlek, while on a “good day” the same session leaves untapped potential.  
 \textbf{Smart Pacer} tackles this mismatch by casting second-by-second pacing as a finite-horizon \emph{Markov Decision Process} and solving it with tabular \emph{Q-learning}. 
 
-Each second the agent analyze a compact environment defined by heart-rate zone, power zone, fatigue, phase of the workout, slope of the ground and select one of three intuitive actions: \emph{accelerate}, \emph{hold}, or \emph{ease}. A multi-term reward function was defined inside the simulation environment.
+Each second the agent analyzes a compact environment defined by heart-rate zone, power zone, fatigue, phase of the workout, and slope of the ground, and selects one of three intuitive actions: \emph{accelerate}, \emph{hold}, or \emph{ease}. A multi-term reward function was defined inside the simulation environment to maximize the benefit from each training session.
 
-Policies are trained off-line across four canonical workouts (fartlek, progression, endurance, recovery) and three athlete archetypes, then deployed on-line via a 1 Hz MQTT stream that simulate what a smartwatch could prompts in a more detailed and precise version.
+The model was trained using Q-learning to optimize the reward across different tested parameters, ensuring adaptability to various athlete profiles and workout types. Policies are trained off-line across four canonical workouts (fartlek, progression, endurance, recovery) and three athlete archetypes, then deployed on-line via a 1 Hz MQTT stream that simulates what a smartwatch could prompt in a real-life scenario.
+
+Additionally, a video simulation was developed to visualize athletes' performances on different GPX tracks with the defined training programs, dynamically showing fatigue levels throughout each session.
 
 
 \section{Formalization of the Markov Decision Process}\label{sec:methodology}
 \input{chapters/methodology.tex}
 
-\section{MQTT Communication}\label{sec:mqtt-communication}
-\input{chapters/mqtt_communication.tex}  
-
 \section{Results}\label{sec:results}
 \input{chapters/results.tex}
 
-\section{Challenges and Future Developments}\label{sec:challenges-future}
+\section{MQTT Communication}\label{sec:mqtt-communication}
+\input{chapters/mqtt_communication.tex}  
+
+\section{Challenges and Future Improvements}\label{sec:limitations}
 \input{chapters/challenges_future_improvements.tex}
 
 \end{document}

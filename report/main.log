@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.21)  18 JUN 2025 15:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.9.21)  20 JUN 2025 12:19
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -435,11 +435,12 @@ Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 47.
 
+[4]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `math shift' on input line 59.
 
-[4]
+
 Overfull \hbox (29.52843pt too wide) in paragraph at lines 66--67
 []\OT1/cmr/bx/n/12 Fatigue penalty \OT1/cmr/m/n/12 { \OT1/cmr/bx/n/12 Fa-tigue penalty \OT1/cmr/m/n/12 { The sim-u-la-tor keeps a con-tin-u-ous [][]\OT1/cmtt/m/n/12 fatigue_score
  []
@@ -449,106 +450,193 @@ Overfull \hbox (4.50017pt too wide) in paragraph at lines 123--124
 []\OT1/cmr/bx/n/12 Recovery and Cooldown Phases: \OT1/cmr/m/n/12 Dur-ing these phases, fa-tigue dis-si-pates through
  []
 
-) (./chapters/mqtt_communication.tex [6]) (./chapters/results.tex [7]
+) (./chapters/results.tex [6] [7]
 
-Package caption Warning: \label without proper reference on input line 54.
+Package caption Warning: \label without proper reference on input line 46.
 See the caption package documentation for explanation.
 
 
-LaTeX Warning: Reference `tab:hyperparameters-500' on page 8 undefined on input line 30.
+LaTeX Warning: Reference `tab:hyperparameters-500' on page 8 undefined on input line 22.
 
-<images/analysis_outputs_500/heatmap_amatour_500.png, id=169, 722.7pt x 433.62pt>
+<images/analysis_outputs_500/heatmap_amatour_500.png, id=162, 722.7pt x 433.62pt>
 File: images/analysis_outputs_500/heatmap_amatour_500.png Graphic file (type png)
 <use images/analysis_outputs_500/heatmap_amatour_500.png>
-Package pdftex.def Info: images/analysis_outputs_500/heatmap_amatour_500.png  used on input line 64.
+Package pdftex.def Info: images/analysis_outputs_500/heatmap_amatour_500.png  used on input line 56.
 (pdftex.def)             Requested size: 339.72592pt x 203.8345pt.
-<images/analysis_outputs_500/heatmap_runner_500.png, id=171, 722.7pt x 433.62pt>
+<images/analysis_outputs_500/heatmap_runner_500.png, id=164, 722.7pt x 433.62pt>
 File: images/analysis_outputs_500/heatmap_runner_500.png Graphic file (type png)
 <use images/analysis_outputs_500/heatmap_runner_500.png>
-Package pdftex.def Info: images/analysis_outputs_500/heatmap_runner_500.png  used on input line 70.
+Package pdftex.def Info: images/analysis_outputs_500/heatmap_runner_500.png  used on input line 62.
 (pdftex.def)             Requested size: 339.72592pt x 203.8345pt.
-<images/analysis_outputs_500/heatmap_elite_500.png, id=172, 722.7pt x 433.62pt>
+<images/analysis_outputs_500/heatmap_elite_500.png, id=165, 722.7pt x 433.62pt>
 File: images/analysis_outputs_500/heatmap_elite_500.png Graphic file (type png)
 <use images/analysis_outputs_500/heatmap_elite_500.png>
-Package pdftex.def Info: images/analysis_outputs_500/heatmap_elite_500.png  used on input line 76.
+Package pdftex.def Info: images/analysis_outputs_500/heatmap_elite_500.png  used on input line 68.
 (pdftex.def)             Requested size: 339.72592pt x 203.8345pt.
 [8] [9 <./images/analysis_outputs_500/heatmap_amatour_500.png> <./images/analysis_outputs_500/heatmap_runner_500.png> <./images/analysis_outputs_500/heatmap_elite_500.png>]
-<images/analysis_outputs_2000/heatmap_amatour.png, id=188, 722.7pt x 433.62pt>
+<images/analysis_outputs_2000/heatmap_amatour.png, id=184, 722.7pt x 433.62pt>
 File: images/analysis_outputs_2000/heatmap_amatour.png Graphic file (type png)
 <use images/analysis_outputs_2000/heatmap_amatour.png>
-Package pdftex.def Info: images/analysis_outputs_2000/heatmap_amatour.png  used on input line 105.
+Package pdftex.def Info: images/analysis_outputs_2000/heatmap_amatour.png  used on input line 97.
 (pdftex.def)             Requested size: 339.72592pt x 203.8345pt.
-<images/analysis_outputs_2000/heatmap_runner.png, id=189, 722.7pt x 433.62pt>
+<images/analysis_outputs_2000/heatmap_runner.png, id=185, 722.7pt x 433.62pt>
 File: images/analysis_outputs_2000/heatmap_runner.png Graphic file (type png)
 <use images/analysis_outputs_2000/heatmap_runner.png>
-Package pdftex.def Info: images/analysis_outputs_2000/heatmap_runner.png  used on input line 111.
+Package pdftex.def Info: images/analysis_outputs_2000/heatmap_runner.png  used on input line 103.
 (pdftex.def)             Requested size: 339.72592pt x 203.8345pt.
-<images/analysis_outputs_2000/heatmap_elite.png, id=190, 722.7pt x 433.62pt>
+<images/analysis_outputs_2000/heatmap_elite.png, id=186, 722.7pt x 433.62pt>
 File: images/analysis_outputs_2000/heatmap_elite.png Graphic file (type png)
 <use images/analysis_outputs_2000/heatmap_elite.png>
-Package pdftex.def Info: images/analysis_outputs_2000/heatmap_elite.png  used on input line 117.
+Package pdftex.def Info: images/analysis_outputs_2000/heatmap_elite.png  used on input line 109.
 (pdftex.def)             Requested size: 339.72592pt x 203.8345pt.
-<images/elite_endurance_convergence.png, id=191, 867.24pt x 433.62pt>
+<images/elite_endurance_convergence.png, id=187, 867.24pt x 433.62pt>
 File: images/elite_endurance_convergence.png Graphic file (type png)
 <use images/elite_endurance_convergence.png>
-Package pdftex.def Info: images/elite_endurance_convergence.png  used on input line 139.
+Package pdftex.def Info: images/elite_endurance_convergence.png  used on input line 131.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/elite_fartlek_convergence.png, id=192, 867.24pt x 433.62pt>
+<images/elite_fartlek_convergence.png, id=188, 867.24pt x 433.62pt>
 File: images/elite_fartlek_convergence.png Graphic file (type png)
 <use images/elite_fartlek_convergence.png>
-Package pdftex.def Info: images/elite_fartlek_convergence.png  used on input line 144.
+Package pdftex.def Info: images/elite_fartlek_convergence.png  used on input line 136.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/elite_progressions_convergence.png, id=193, 867.24pt x 433.62pt>
+<images/elite_progressions_convergence.png, id=189, 867.24pt x 433.62pt>
 File: images/elite_progressions_convergence.png Graphic file (type png)
 <use images/elite_progressions_convergence.png>
-Package pdftex.def Info: images/elite_progressions_convergence.png  used on input line 149.
+Package pdftex.def Info: images/elite_progressions_convergence.png  used on input line 141.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/elite_recovery_convergence.png, id=194, 867.24pt x 433.62pt>
+<images/elite_recovery_convergence.png, id=190, 867.24pt x 433.62pt>
 File: images/elite_recovery_convergence.png Graphic file (type png)
 <use images/elite_recovery_convergence.png>
-Package pdftex.def Info: images/elite_recovery_convergence.png  used on input line 154.
+Package pdftex.def Info: images/elite_recovery_convergence.png  used on input line 146.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/runner_endurance_convergence.png, id=195, 867.24pt x 433.62pt>
+<images/runner_endurance_convergence.png, id=191, 867.24pt x 433.62pt>
 File: images/runner_endurance_convergence.png Graphic file (type png)
 <use images/runner_endurance_convergence.png>
-Package pdftex.def Info: images/runner_endurance_convergence.png  used on input line 165.
+Package pdftex.def Info: images/runner_endurance_convergence.png  used on input line 157.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/runner_fartlek_convergence.png, id=196, 867.24pt x 433.62pt>
+<images/runner_fartlek_convergence.png, id=192, 867.24pt x 433.62pt>
 File: images/runner_fartlek_convergence.png Graphic file (type png)
 <use images/runner_fartlek_convergence.png>
-Package pdftex.def Info: images/runner_fartlek_convergence.png  used on input line 170.
+Package pdftex.def Info: images/runner_fartlek_convergence.png  used on input line 162.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/runner_progressions_convergence.png, id=197, 867.24pt x 433.62pt>
+<images/runner_progressions_convergence.png, id=193, 867.24pt x 433.62pt>
 File: images/runner_progressions_convergence.png Graphic file (type png)
 <use images/runner_progressions_convergence.png>
-Package pdftex.def Info: images/runner_progressions_convergence.png  used on input line 175.
+Package pdftex.def Info: images/runner_progressions_convergence.png  used on input line 167.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/runner_recovery_convergence.png, id=198, 867.24pt x 433.62pt>
+<images/runner_recovery_convergence.png, id=194, 867.24pt x 433.62pt>
 File: images/runner_recovery_convergence.png Graphic file (type png)
 <use images/runner_recovery_convergence.png>
-Package pdftex.def Info: images/runner_recovery_convergence.png  used on input line 180.
+Package pdftex.def Info: images/runner_recovery_convergence.png  used on input line 172.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/amatour_endurance_convergence.png, id=199, 867.24pt x 433.62pt>
+<images/amatour_endurance_convergence.png, id=195, 867.24pt x 433.62pt>
 File: images/amatour_endurance_convergence.png Graphic file (type png)
 <use images/amatour_endurance_convergence.png>
-Package pdftex.def Info: images/amatour_endurance_convergence.png  used on input line 191.
+Package pdftex.def Info: images/amatour_endurance_convergence.png  used on input line 183.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/amatour_fartlek_convergence.png, id=200, 867.24pt x 433.62pt>
+<images/amatour_fartlek_convergence.png, id=196, 867.24pt x 433.62pt>
 File: images/amatour_fartlek_convergence.png Graphic file (type png)
 <use images/amatour_fartlek_convergence.png>
-Package pdftex.def Info: images/amatour_fartlek_convergence.png  used on input line 196.
+Package pdftex.def Info: images/amatour_fartlek_convergence.png  used on input line 188.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/amatour_progressions_convergence.png, id=201, 867.24pt x 433.62pt>
+<images/amatour_progressions_convergence.png, id=197, 867.24pt x 433.62pt>
 File: images/amatour_progressions_convergence.png Graphic file (type png)
 <use images/amatour_progressions_convergence.png>
-Package pdftex.def Info: images/amatour_progressions_convergence.png  used on input line 201.
+Package pdftex.def Info: images/amatour_progressions_convergence.png  used on input line 193.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
-<images/amatour_recovery_convergence.png, id=202, 867.24pt x 433.62pt>
+<images/amatour_recovery_convergence.png, id=198, 867.24pt x 433.62pt>
 File: images/amatour_recovery_convergence.png Graphic file (type png)
 <use images/amatour_recovery_convergence.png>
-Package pdftex.def Info: images/amatour_recovery_convergence.png  used on input line 206.
+Package pdftex.def Info: images/amatour_recovery_convergence.png  used on input line 198.
 (pdftex.def)             Requested size: 203.83417pt x 101.91394pt.
- [10] [11 <./images/analysis_outputs_2000/heatmap_amatour.png> <./images/analysis_outputs_2000/heatmap_runner.png> <./images/analysis_outputs_2000/heatmap_elite.png>] [12 <./images/elite_endurance_convergence.png> <./images/elite_fartlek_convergence.png> <./images/elite_progressions_convergence.png> <./images/elite_recovery_convergence.png> <./images/runner_endurance_convergence.png> <./images/runner_fartlek_convergence.png> <./images/runner_progressions_convergence.png> <./images/runner_recovery_convergence.png>]) (./chapters/challenges_future_improvements.tex [13 <./images/amatour_endurance_convergence.png> <./images/amatour_fartlek_convergence.png> <./images/amatour_progressions_convergence.png> <./images/amatour_recovery_convergence.png>]) [14] (./main.aux)
+) (./chapters/mqtt_communication.tex [10] [11 <./images/analysis_outputs_2000/heatmap_amatour.png> <./images/analysis_outputs_2000/heatmap_runner.png> <./images/analysis_outputs_2000/heatmap_elite.png>] [12 <./images/elite_endurance_convergence.png> <./images/elite_fartlek_convergence.png> <./images/elite_progressions_convergence.png> <./images/elite_recovery_convergence.png> <./images/runner_endurance_convergence.png> <./images/runner_fartlek_convergence.png> <./images/runner_progressions_convergence.png> <./images/runner_recovery_convergence.png>]
+./chapters/mqtt_communication.tex:7: Missing $ inserted.
+<inserted text> 
+                $
+l.7   \item Resting heart rate (HR_
+                                   rest)
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+./chapters/mqtt_communication.tex:8: LaTeX Error: Command \item invalid in math mode.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.8   \item
+            Maximum heart rate (HR_max)
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+./chapters/mqtt_communication.tex:8: LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.8   \item M
+             aximum heart rate (HR_max)
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+./chapters/mqtt_communication.tex:8: LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.8   \item M
+             aximum heart rate (HR_max)
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+./chapters/mqtt_communication.tex:9: LaTeX Error: Command \item invalid in math mode.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.9   \item
+            Functional Threshold Power (FTP)
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+./chapters/mqtt_communication.tex:9: Missing $ inserted.
+<inserted text> 
+                $
+l.9   \item F
+             unctional Threshold Power (FTP)
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+./chapters/mqtt_communication.tex:9: Missing } inserted.
+<inserted text> 
+                }
+l.9   \item F
+             unctional Threshold Power (FTP)
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+./chapters/mqtt_communication.tex:9: Extra }, or forgotten \endgroup.
+\par ...m \@noitemerr {\@@par }\fi \else {\@@par }
+                                                  \fi 
+l.9   \item F
+             unctional Threshold Power (FTP)
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+[13 <./images/amatour_endurance_convergence.png> <./images/amatour_fartlek_convergence.png> <./images/amatour_progressions_convergence.png> <./images/amatour_recovery_convergence.png>]) (./chapters/challenges_future_improvements.tex [14]) [15] (./main.aux)
  ***********
 LaTeX2e <2023-06-01> patch level 1
 L3 programming layer <2023-08-29>
@@ -557,25 +645,22 @@ L3 programming layer <2023-08-29>
 
 LaTeX Warning: There were undefined references.
 
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: A40E6CF649497469144F73483A96E607;3721.
+(rerunfilecheck)             Checksum: 100C0C63F83E4D941E95955E66D8A2F6;3846.
  ) 
 Here is how much of TeX's memory you used:
- 13295 strings out of 474927
- 210653 string characters out of 5763541
+ 13283 strings out of 474927
+ 210548 string characters out of 5763541
  1936785 words of memory out of 5000000
- 34618 multiletter control sequences out of 15000+600000
+ 34616 multiletter control sequences out of 15000+600000
  568331 words of font info for 75 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,711b,590s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,851b,585s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb><c:/texlive/2023/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
-Output written on main.pdf (14 pages, 4726533 bytes).
+Output written on main.pdf (15 pages, 4732559 bytes).
 PDF statistics:
- 328 PDF objects out of 1000 (max. 8388607)
- 245 compressed objects within 3 object streams
- 64 named destinations out of 1000 (max. 500000)
- 259 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 324 PDF objects out of 1000 (max. 8388607)
+ 240 compressed objects within 3 object streams
+ 54 named destinations out of 1000 (max. 500000)
+ 267 words of extra memory for PDF output out of 10000 (max. 10000000)
 

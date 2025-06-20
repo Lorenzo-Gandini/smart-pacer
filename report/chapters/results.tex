@@ -1,11 +1,3 @@
-
-To run the \emph{Smart Pacer} environment the user must first select:
-\begin{itemize}
-  \item a \texttt{workout} from the set of four canonical sessions;
-  \item an \texttt{athlete} archetype from the set of three profiles;
-  \item a \texttt{track} from the set of the three available GPX.
-\end{itemize}
-
 The training programs are defined as follows and they are the typical training sessions that a runner would do during his weekly training plan:
 \begin{itemize}
   \item \textbf{Fartlek} – Represent a variable-intensity workout where the athlete alternates between high and low intensity segments, typically in a short time alternation pattern.
@@ -13,17 +5,17 @@ The training programs are defined as follows and they are the typical training s
   \item \textbf{Endurance} – A long, steady-state run at a moderate pace, designed to build aerobic capacity and endurance.
   \item \textbf{Recovery} – A low-intensity workout aimed at promoting recovery after a hard training session, typically involving easy running or walking, but with a focus on maintaining the athelte moving with a low heart rate and minimizing fatigue.
 \end{itemize}
+All these workouts are defined in the \texttt{trainings.json} file.
 
-The athlete archetypes are defined by their physiological parameters like the heart rate value at rest, the maximal heart rate able to reach, the weight. There are also two more \texttt{fitness-related} values: 
+The athlete archetypes are defined by their physiological parameters like the heart rate value at rest, the maximal heart rate able to reach and the weight. There are also two more \texttt{fitness-related} values: 
 \begin{itemize}
-\item \textbf{FTP} – Functional Threshold Power, the maximum power output an athlete can sustain for a prolonged period (typically 60 minutes) ;
-\item \textbf{Fitness factor} – A value that represents the athlete's fitness level, which is into the range of 0,7 for a beginner athlete, up to 1,3 for an elite athlete. This value is used to determine the athlete's ability to sustain high-intensity efforts and recover from them.
+\item \textbf{FTP} – Functional Threshold Power (FTP) is a key metric used to define an athlete's performance profile. It represents the highest average power an athlete can sustain for about 60 minutes and is crucial for estimating personalized training zones and overall aerobic capacity. While FTP is most commonly associated with cycling, it is also relevant in running and other endurance sports. Because not every athlete knows their FTP, many fitness apps and smartwatches can estimate this value automatically by analyzing data from multiple workouts, regardless of the activity type. This makes FTP a practical and widely accessible measure for assessing and tracking athletic performance.
+\item \textbf{Fitness factor} – A value that represents the athlete's fitness level, which is into the range of 0,7 for an elite athlete, up to 1,3 for an amatour athlete. This value is used to determine the athlete's ability to sustain high-intensity efforts, manage fatigue and how well the athlete it's able to recover.
 \end{itemize}
 
-Training was performed on a real GPX track of the \texttt{Parco degli Acquedotti} in Rome. To probe generalisation, the learned policies were replayed \emph{unchanged} on two unseen yet topographically comparable routes: a riverside path in \texttt{Parco Belfiore} and the \texttt{Lago di Mezzo} waterfront loop, both in Mantova. These additional circuits share similar average slope with the first one but differ in curve geometry and surface, allowing verification that the agent’s behaviour is track-agnostic rather than over-fitted to the training venue.
+Training was performed on a real GPX track of the \textit{Parco degli Acquedotti} in Rome. To probe generalisation, the learned policies were replayed unchanged on two unseen yet topographically comparable routes: a riverside path in \textit{Parco Belfiore} and the \textit{Lago di Mezzo} waterfront loop, both in Mantova. These additional circuits share similar average slope with the first one but differ in curve geometry and surface, allowing verification that the agent’s behaviour is track-agnostic rather than over-fitted to the training venue. The results of all these simulation can be seen in the video folder.
 
 \section{Q-Learning Training Experiments}
-
 To train the reinforcement learning policy for the agent, was adopted a tabular Q-learning approach. Multiple hyperparameter combinations were tested evaluating their performance through the cumulative reward across episodes and comparing athlete-specific training results.
 
 \subsection{First Experiment: 500 Episodes}

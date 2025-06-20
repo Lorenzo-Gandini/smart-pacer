@@ -1,9 +1,27 @@
-To simulate communication between the smartwatch application (acting as the smart pacer) and the user, an MQTT session was established. This setup allows the user to send data to the smartwatch app, which processes the information (by running the RunnerEnv) and provides feedback, including suggested actions.
+To simulate communication between the user and the ideal smartwatch application (acting as the smart pacer), can be established an MQTT session. This setup allows the user to send data to the smartwatch app, which processes the information (by running the RunnerEnv) and provides feedback, including suggested actions to take during the training.
 
-\subsection{MQTT Messages}
-The communication occurs over the topic \texttt{smartpacer/action} using the public broker \texttt{broker.emqx.io}.
+\subsection{Run the simulation}\label{subsec:start-application}
+The application is designed to run in a terminal environment, that can be done by exectuing the \texttt{main.py} file, which is the entry point of the application.
+After start it, by terminal will be asked information about the athlete in order to find the most close archetypes profile to the user, as defined in section \ref{sec:methodology}. The user will be prompted to provide the following information:
+\begin{itemize}
+  \item Resting heart rate (HR_rest)
+  \item Maximum heart rate (HR_max)
+  \item Functional Threshold Power (FTP)
+  \item Body weight in kg
+\end{itemize}
 
-The payload of each MQTT message is a JSON object containing the following fields:
+After that, the user will be asked to select the type of workout they want to perform, choosing from the following options:
+\begin{itemize}
+  \item Fartlek
+  \item Progression
+  \item Endurance
+  \item Recover
+\end{itemize}
+
+And in the end will be asked if the user wants to create a MQTT session to simulate the communication with the smartwatch application. 
+
+\subsection{MQTT Messages}\label{subsec:mqtt-messages}
+The communication occurs over the topic \texttt{smartpacer/action} using the public broker \texttt{broker.emqx.io}. The smart pacer publishes messages at a frequency of 1 Hz, meaning it sends updates every second during the workout session. This frequency is chosen to provide timely feedback to the athlete, allowing them to adjust their pace and actions in real-time based on the smart pacer's suggestions. The payload of each MQTT message is a JSON object containing the following fields:
 \begin{itemize}
   \item \texttt{second}: the current second of the workout;
   \item \texttt{phase}: the current phase of the workout;
@@ -12,8 +30,7 @@ The payload of each MQTT message is a JSON object containing the following field
 \end{itemize}
 
 Each field is represented as a string, accompanied by a relevant emoji to enhance the user experience.
-
-An example of the messages are shown in figures .
+An example of the messages are shown in figures:
 
 % \ref{fig:mqtt_message_example}.
 

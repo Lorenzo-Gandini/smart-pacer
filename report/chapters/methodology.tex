@@ -47,19 +47,19 @@ The three admissible actions that an athlete can take during a workout are defin
 \subsection{Transition dynamics \(\mathcal{P}\)}
 The most intricate component of the MDP is define the state–transition kernel, i.e.\ how the physiological and contextual state of the athlete evolves once an action is taken. In my simulation this logic resides in \verb|RunnerEnv.step()|, which calls four update routines every second in the order shown below:
 
-\begin{enumerate}
+\begin{itemize}
   \item \verb|_update_power_zone(action)| – the chosen action (\emph{slow down}, \emph{keep}, or \emph{accelerate}) instantaneously shifts the target wattage and therefore the power zone. In real life, when you accelerate, you immediately increase your power output, while when you slow down, you immediately decrease it. 
   \item \verb|_update_hr_zone(action)| – like the power zone update, given the action, this function updates the target heart rate zone. The heart rate is a lagged variable, so it will not change immediately, but the target zone is updated to reflect the action taken. In real life, the heart rate zone, does not change immediately since it's an interval of values, but it will drift towards the target zone over time.
   \item \verb|_update_fatigue(action)| – a dual-process model accumulates or dissipates fatigue depending on HR, power, workout phase, and the athlete's profile (elite/runner/amateur);
   \item \verb|_advance_segment()| – the global time index is incremented, the current workout segment is updated, and the local slope label is re-computed from the GPX elevation trace.  
-\end{enumerate}
+\end{itemize}
 
 Applied sequentially, these rules deterministically map the current pair \((s,a)\) to a unique next state \(s'\) at a granularity of 1 s; stochasticity is confined to the reward function, which injects small uniform noise to break ties.
 
 \subsubsection{Reward function \(r(s,a)\)}
 The reward function, together with the \verb|_update_fatigue(action)| routine (see~\ref{subsubsec:fatigue}), forms the core of the simulator’s logic. These components determine how the agent is incentivised to follow the training plan while accounting for the athlete’s physiological state. The reward function is implemented in the \verb|compute_reward()| method of \verb|runner_env.py|, and outputs a scalar value that quantifies the agent’s performance in the current state and it's given by the sum of eight domain-specific terms:
 
-\begin{enumerate}
+\begin{itemize}
   
   \item \textbf{Zone–matching accuracy} - the absolute distance between the current and target HR / power zones is mapped to a piece-wise score \(\{+2.0,+0.5,-1.0,-2.5,-4.0\}\); HR and power contributions are then blended as \(0.4\,r_{\text{HR}} + 0.4\,r_{\text{Power}}\).
 
@@ -104,7 +104,7 @@ The reward function, together with the \verb|_update_fatigue(action)| routine (s
   \item \textbf{Global fatigue decay \& stochasticity.} -  After all partial rewards are summed, the total is scaled by a fatigue-dependent factor \(1-\min(f/200,0.4)\), which can attenuate the reward by at most \(40\,\%\) when \(f\!=\!10\).  
   Finally, a zero-mean uniform noise \(\mathcal{U}(-0.1,0.1)\) is added to break deterministic ties and simulate real-world variability. 
 
-\end{enumerate}
+\end{itemize}
 
 The final scalar is therefore
 \[

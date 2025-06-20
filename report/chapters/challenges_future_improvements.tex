@@ -1,4 +1,3 @@
-\section{Limitations and Future Improvements}\label{sec:limitations}
 
 \subsection{State-space explosion}
 The current Markov model already spans seven discrete variables, yielding several thousand reachable combinations.  Extending realism would require additional factors — e.g.\ \emph{weather} (temperature, humidity, wind) and \emph{surface type} (asphalt, track, trail, grass). Although essential for real-world fidelity, every new dimension inflates the state complexity.
@@ -6,6 +5,9 @@ The current Markov model already spans seven discrete variables, yielding severa
 \subsection{Richer athlete profiles}
 Present profiles depend on basic informations and a FTP valu. A more faithful description would incorporate sex, age, injury history, recent training load, previous-night sleep quality, HRV-derived recovery indices and update them with the evolution of the training process. 
 Such metadata would enable session prescriptions that respect female hormonal cycles, age-related recovery kinetics, and cumulative muscle stress.
+
+\subsection{Training program definition}
+Currently, training program definition follows a uniform logic, adjusting only a few key parameters based on the athlete's level. In practice, however, an elite athlete will face more advanced session types than an amateur: for example, longer endurance sessions, fartlek with more prolonged sprints, or a greater variety of specific workouts. Introducing greater variability and complexity in program generation — differentiating session duration, intensity, and structure according to the athlete profile — would certainly increase the learning task's complexity, but at the same time would better simulate reality and provide more personalized and stimulating recommendations.
 
 \subsection{Fatigue and reward refinement}
 Fatigue and reward terms were the hardest features to properly develop. In order to be even more realistic and coherent with real life behaviours could be implemented also a \textbf{Injury-risk term}, which will introduce a weekly load delta component that penalises abrupt increases in training load, reducing overuse-injury likelihood.
