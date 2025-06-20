@@ -17,11 +17,18 @@ class RunnerEnv:
         self.reset()
 
     def _get_bio_parameters(self):
-        self.fitness_factor = self.athlete["fitness_factor"]
         self.hr_rest = self.athlete["HR_rest"]
         self.hr_max = self.athlete["HR_max"]
         self.ftp = self.athlete["FTP"]
         self.weight = self.athlete["weight_kg"]
+        
+        ftp_per_kg = self.athlete["FTP"] / self.athlete["weight_kg"]
+        if ftp_per_kg > 4.8:
+            self.fitness_factor = 0.7  # elite
+        elif ftp_per_kg > 3.3:
+            self.fitness_factor = 1.0  # runner
+        else:
+            self.fitness_factor = 1.3  # amatour
 
     def reset(self):
         # Reset the environment state to initial values
@@ -29,6 +36,7 @@ class RunnerEnv:
         self.fatigue_score = 0.0
         self.time_in_high_zones = 0
         self.hr_float = 1.0
+        self._fatigue_values = []  
         self.expanded_plan = self._expand_training_segments(self.training["segments"])
         self.state = {
             "HR_zone": "Z1",
@@ -43,32 +51,24 @@ class RunnerEnv:
         return self.state
 
     def step(self, action):
-        # Validate action taken and proceed with the simulation step
         self._update_power_zone(action)
         self._update_hr_zone(action)
         self._update_fatigue(action)
-        self._advance_segment()
-        reward = self._compute_reward(action)
-        done = self.second >= self.training["duration"] * 60
-        self._log_state(action, reward, done)
 
-        if not hasattr(self, '_fatigue_thresholds'):
-            self._fatigue_thresholds = {"low": 33, "high": 67}  # percentiles for fatigue levels
+        if not hasattr(self, '_fatigue_values'):
             self._fatigue_values = []
-
         self._fatigue_values.append(self.fatigue_score)
-        # low_th = np.percentile(self._fatigue_values, self._fatigue_thresholds["low"])
-        # high_th = np.percentile(self._fatigue_values, self._fatigue_thresholds["high"])
-        low_th = 35
-        high_th = 70
+        if len(self._fatigue_values) > 300:
+            self._fatigue_values = self._fatigue_values[-300:]
 
-        if self.fatigue_score >= high_th:
-            self.state["fatigue_level"] = "high"
-        elif self.fatigue_score >= low_th:
-            self.state["fatigue_level"] = "medium"
-        else:
-            self.state["fatigue_level"] = "low"
+        self.second += 1
+        self._advance_segment()
+
+        reward = self._compute_reward(action)
+        done = self.second >= self.training["duration"] * 60 
+
         return self.state.copy(), reward, done
+
 
     def _update_power_zone(self, action): #THIS update logic is so easy?
         zones = ["Z1", "Z2", "Z3", "Z4", "Z5"]
@@ -87,53 +87,133 @@ class RunnerEnv:
 
     def _update_fatigue(self, action):
         ''' Update the fatigue score based on the current state and action taken by the athlete. 
-        - Recovery/Cooldown: exponential + sigmoid decay with floor to simulate how fatigue naturally decreases during rest periods, with a minimum fatigue
-        Are defined costants k and decay to control the rate of fatigue decay, and a floor to ensure fatigue does not drop below a certain level.
-        - Warmup/Push: fatigue accumulates based on HR and Power zones, with adjustments for training type and athlete's FTP
-        The fatigue score is capped between 0 and 10, with a label indicating low, medium, or high fatigue level. gain costants are defined to control how much fatigue accumulates based on the current HR zone, Power zone, and training session type (some are more fatigue demanding than others).
+        Elite athletes accumulate fatigue slower and recover faster.
+        Amateur athletes accumulate fatigue faster and recover slower.
         '''
 
         hr_level = self._get_zone(self.state["HR_zone"])
         power_level = self._get_zone(self.state["power_zone"])
         phase = self.state["phase_label"]
+        athlete_level = self._get_athlete_level()
+        
+        # Define athlete-specific factors
+        athlete_factors = {
+            "elite": {
+                "accumulation_factor": 0.7,  # Accumulate 30% less fatigue
+                "recovery_factor": 1.4,      # Recover 40% faster
+                "efficiency_bonus": 0.8      # More efficient at high zones
+            },
+            "runner": {
+                "accumulation_factor": 0.9,  # Accumulate 10% less fatigue
+                "recovery_factor": 1.1,      # Recover 10% faster
+                "efficiency_bonus": 0.9      # Slightly more efficient
+            },
+            "amateur": {
+                "accumulation_factor": 1.2,  # Accumulate 20% more fatigue
+                "recovery_factor": 0.8,      # Recover 20% slower
+                "efficiency_bonus": 1.1      # Less efficient at high zones
+            }
+        }
+        
+        factors = athlete_factors[athlete_level]
 
         # Recovery/Cooldown
         if phase in ["recover","cooldown"]:
-            k = 0.05 * self.fitness_factor
+            # Base recovery rate adjusted by athlete level
+            k = 0.05 * factors["recovery_factor"]
             decayed = self.fatigue_score * math.exp(-k)
             sig = 1/(1+math.exp(-10*(self.fatigue_score-5)))
-            decay = 0.1 * self.fitness_factor * sig
-            floor = 0.1 * self.fitness_factor
+            decay = 0.1 * factors["recovery_factor"] * sig
+            
+            # Minimum fatigue floor - elite athletes can recover to lower levels
+            floor_by_level = {"elite": 0.05, "runner": 0.1, "amateur": 0.15}
+            floor = floor_by_level[athlete_level]
+            
             self.fatigue_score = max(floor, decayed - decay)
         else:
             # Warmup/Push accumulation
-            gain = {1:0.01,2:0.05,3:0.12,4:0.3,5:0.5}[hr_level]
-            if phase == "push": gain *= 1.2
-            if hr_level <= 2 and action == "slow down": gain -= 0.1
+            base_gain = {1:0.01, 2:0.05, 3:0.12, 4:0.3, 5:0.5}[hr_level]
+            
+            # Apply athlete-specific accumulation factor
+            gain = base_gain * factors["accumulation_factor"]
+            
+            if phase == "push": 
+                gain *= 1.2
+            
+            # Efficiency at high zones - elite athletes handle high zones better
+            if hr_level >= 4:
+                gain *= factors["efficiency_bonus"]
+                
+            if hr_level <= 2 and action == "slow down": 
+                gain -= 0.1
+                
             if hr_level >= 4:
                 self.time_in_high_zones += 1
             else:
-                self.time_in_high_zones = max(0,self.time_in_high_zones-1)
-            gain += 0.01 * self.time_in_high_zones
-            if hr_level>=4 and power_level>=4:
-                gain *= 1.3
-            ftp_factor = 1.0/max(0.1, self.ftp/self.weight)
-            gain *= ftp_factor
-            gain *= {"fartlek":1.3,"interval":1.2,
-                     "progressions":1.1,"endurance":1.0,
-                     "recovery":0.7}.get(self.training_type,1.0)
-            self.fatigue_score += gain + random.uniform(-0.02,0.02)
-            self.fatigue_score *= self.fitness_factor
-            self.fatigue_score = max(0,min(10,self.fatigue_score))
+                self.time_in_high_zones = max(0, self.time_in_high_zones-1)
+                
+            # High zone penalty - but reduced for better athletes
+            high_zone_penalty = 0.01 * self.time_in_high_zones * factors["accumulation_factor"]
+            gain += high_zone_penalty
+            
+            # Combined high HR and Power zones penalty
+            if hr_level >= 4 and power_level >= 4:
+                combined_penalty = 0.3 * factors["efficiency_bonus"]
+                gain *= (1 + combined_penalty)
+            
+            # FTP factor - better athletes are more efficient
+            # This represents power-to-weight efficiency
+            ftp_per_kg = self.ftp / self.weight
+            ftp_efficiency = min(1.5, max(0.5, 4.0 / ftp_per_kg))  # Inverse relationship
+            gain *= ftp_efficiency
+            
+            # Training type modifiers
+            training_modifiers = {
+                "fartlek": 1.3, "interval": 1.2, "progressions": 1.1, 
+                "endurance": 1.0, "recovery": 0.7
+            }
+            gain *= training_modifiers.get(self.training_type, 1.0)
+            
+            # Apply gain with some randomness
+            self.fatigue_score += gain + random.uniform(-0.02, 0.02)
+            
+            # Cap fatigue score
+            self.fatigue_score = max(0, min(10, self.fatigue_score))
 
         # Update fatigue level label
-        if self.fatigue_score <= 3:
-            lvl = "low"
-        elif self.fatigue_score <= 7:
-            lvl = "medium"
+        self._update_fatigue_level()
+
+    def _update_fatigue_level(self):
+        """Update fatigue level based on athlete type and current fatigue score"""
+        athlete_level = self._get_athlete_level()
+        
+        # Define thresholds based on athlete level
+        # These thresholds represent when fatigue starts affecting performance
+        thresholds = {
+            "elite": {"medium": 5.5, "high": 8.0},    # Can handle more fatigue
+            "runner": {"medium": 4.0, "high": 6.5},   # Intermediate tolerance
+            "amateur": {"medium": 2.5, "high": 4.5}   # Feel fatigue effects sooner
+        }
+        
+        level_thresholds = thresholds[athlete_level]
+        
+        if self.fatigue_score <= level_thresholds["medium"]:
+            self.state["fatigue_level"] = "low"
+        elif self.fatigue_score <= level_thresholds["high"]:
+            self.state["fatigue_level"] = "medium"
         else:
-            lvl = "high"
-        self.state["fatigue_level"] = lvl
+            self.state["fatigue_level"] = "high"
+
+    
+    def _get_athlete_level(self):
+        """Determine athlete level based on FTP per kg"""
+        ftp_per_kg = self.ftp / self.weight
+        if ftp_per_kg > 5.5:
+            return "elite"
+        elif ftp_per_kg > 4.0:
+            return "runner"
+        else:
+            return "amateur"
 
     def _advance_segment(self):
         ''' Advance to the next segment in the training plan, updating the state accordingly.'''
