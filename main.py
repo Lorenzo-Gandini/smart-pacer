@@ -1,44 +1,11 @@
 import time
 from runner_env import RunnerEnv, load_json
 from utils import *
-
 import paho.mqtt.client as mqtt
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-# Start the script, asking the users for input parameters. These will be used to configure the training session looking for the closest athlete profile.
-def begin_session():
-    
-    print("\n👤 Let's configure your session.")
-    
-    def ask_float(prompt):
-        value = input(f"{prompt}: ")
-        if value != "":
-            try:
-                value = float(value)
-                return value
-            except ValueError:
-                print("⚠️ Invalid input. Please enter a number.")
-                return ask_float(prompt)
 
-    hr_rest = ask_float("Resting heart rate (HR_rest)")
-    hr_max = ask_float("Maximum heart rate (HR_max)")
-    ftp = ask_float("Functional Threshold Power (FTP)")
-    weight = ask_float("Body weight in kg")
-    fitness = ask_float("Fitness factor (0.7=elite, 1.0=runner, 1.3=amateur)")
-
-    input_athlete = {
-        "HR_rest": hr_rest,
-        "HR_max": hr_max,
-        "FTP": ftp,
-        "weight_kg": weight,
-        "fitness_factor": fitness
-    }
-
-    circuit = ask_circuit()
-    training_name = ask_training()
-    mqtt_communication = ask_mqtt()
-
-    print(f"\n✅ Configuration complete! Now let's train !\n")
-    return input_athlete, training_name, circuit, mqtt_communication
 
 def append_data(state, action, reward):
     '''Append data to the session data list'''
@@ -55,14 +22,16 @@ def append_data(state, action, reward):
         'reward': reward,
         'fatigue_score': env.fatigue_score,
     })
-    
+
 # ==== MAIN SIMULATION ==== #
+step_timestamp = 0
+print_banner()
 input_athlete, training_name, circuit_name, mqtt_communication = begin_session()
 profile_label = get_profile_label(input_athlete)
 circuit = load_json(f"data/maps/{circuit_name}.json")
 training = get_training_label(training_name)
 
-print("Nearest profile : ", profile_label)
+print_summary(profile_label, input_athlete, circuit_name, training_name, mqtt_communication)
 
 Q = load_qtable(profile_label, training_name)
 env = RunnerEnv(input_athlete, training, track_data=circuit, verbose=True)
@@ -89,8 +58,10 @@ while not training_completed:
     append_data(state, action, reward)
 
     if mqtt_communication:
-        send_mqtt(state, action, client, topic)
-        time.sleep(0.5)
+        step_timestamp += 1
+        state["timestamp"] = step_timestamp
+        send_mqtt(state, action, reward, client, topic)
+        time.sleep(1)
 
 save_training_session(session_data, profile_label, training_name, circuit, circuit_name)    
 print(f"\n🏁 Training completed! Total reward: {total_reward:.2f}")
