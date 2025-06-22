@@ -49,56 +49,77 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 3. Launch interactive Simulation (`main.py`)
+### 3. Launch Interactive Simulation (`main.py`)
 
-When you launch `main.py`, you will be prompted to enter:
+When you launch `main.py`, you will be prompted to configure your session with:
 
 1. **Resting heart rate (HR_rest)**  
 2. **Maximum heart rate (HR_max)**  
 3. **Functional Threshold Power (FTP)**  
 4. **Body weight in kg**  
-5. **Fitness factor** (0.7=elite, 1.0=runner, 1.3=amateur)  
-6. **Circuit** (select from the list provided of tracks inside of `data/maps/*.json`) 
-7. **Training type** (`fartlek`, `endurance`, `progressions`, `recovery`)  
-8. **Enable MQTT?** (y/n)
+5. **Training circuit** (choose from maps in `data/maps/*.json`)  
+6. **Training type** (`fartlek`, `endurance`, `progressions`, `recovery`)  
+7. **Enable MQTT communication** (yes/no)
 
-These values configure the environment and determine which base “athlete profile” is more close to the user and which Q-table to load.
+After these inputs, the system will identify the **nearest athlete profile** (elite, runner, or amateur) based on physiological similarity and load the corresponding Q-table.
 
-### Simulator Outputs
-After configuration, the script prints:
-
-- **Nearest profile** (the closest matching base athlete profile by Euclidean distance)  
-- **Per‐step logs** if `verbose=True` like:
+### Terminal Output Example
 
 ```bash
-Second: 123 | Action: ACCELERATE | Reward: 0.45 | Done: False
-➤ Phase : push | Target HR Zone: Z4 | Target Power Zone: Z4
-➤ Actual State : HR Zone: Z3 | Power Zone: Z3 | Fatigue Level: medium | Slope Level: uphill
+👤 Let's configure your session.
+❤️ Resting HR: 42
+💖 Max HR: 180
+🚴 FTP: 360
+🏋️ Weight: 74
+
+🌍 Select your training circuit:
+  1. acquedotti   2. belfiore   3. tre_laghi
+🔢 Circuit [1–3]: 2   ✅ belfiore selected
+
+🏋️ Choose your training session:
+  1. fartlek   2. endurance   3. recovery   4. progressions
+🔢 Training [1–4]: 2   ✅ endurance selected
+
+📡 Enable MQTT communication? (y/n): y   ✅ MQTT enabled
+📲 Open another terminal and run `python mqtt.py` to follow your pacing assistant
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ CONFIGURATION COMPLETE – SMART PACER READY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 Profile       : runner
+🌍 Circuit       : belfiore
+🏋️ Training Type : endurance
+📡 MQTT Enabled  : YES
+
+📊 Athlete Stats:
+  💓 HR_rest : 42.0 bpm
+  ❤️ HR_max  : 180.0 bpm
+  🚴 FTP     : 360.0 W
+  🏋️ Weight  : 74.0 kg
+
+🏃‍♂️ Starting training...
 ```
-
-- **MQTT messages** (if enabled) are published to `smartpacer/action` and echoed in console by `mqtt.py`, showing a formatted status card of phase, second, action, HR zone, power zone, and fatigue level.
-
-- Upon completion, the script saves a CSV under `training_logs/` (named `<profile>_<training>_<circuit>_<YYYY-MM-DD>.csv`) containing one row per simulated second with columns:
-
 
 ### 4. MQTT Communication
 
-The Smart Pacer can publish live pacing instructions over MQTT and you can run a simple console subscriber to see them in real time—just like a smartwatch would display your next move.
+If MQTT is enabled, the Smart Pacer publishes messages every second during the simulation to the topic `smartpacer/action`. These simulate smartwatch instructions.
 
 #### a) Configuration
 
-- **Broker**: Default is `broker.emqx.io`.
-- **Topic**: Default is `smartpacer/action`.
-- To change either, edit the top of `mqtt.py`:
+- **Broker**: Default is `broker.emqx.io`  
+- **Topic**: Default is `smartpacer/action`
 
-  ```python
-  broker = "your.broker.address"
-  topic  = "smartpacer/action"
-  ```
+To customize these, edit the top of `mqtt.py`:
+
+```python
+broker = "your.broker.address"
+topic  = "smartpacer/action"
+```
 
 #### b) Run the Subscriber
 
-Open a terminal and start the listener:
+Open a terminal and run:
 
 ```bash
 python mqtt.py
@@ -106,20 +127,14 @@ python mqtt.py
 
 You should see:
 
-```
+```bash
 🏃‍♂️ SMART PACER CONNECTED 🏃‍♀️
 🔊 Waiting for pace instructions...
 ```
 
-#### c) Publish from the Simulator
+#### c) Real-Time Message Format
 
-When you launch:
-
-```bash
-python main.py
-```
-
-and answer yes to the question **“Enable MQTT?”**, the simulator will publish messages every simulated second. A typical payload is:
+Each second, a message like the following is received:
 
 ```json
 {
@@ -128,39 +143,56 @@ and answer yes to the question **“Enable MQTT?”**, the simulator will publis
   "action":     "keep going",
   "hr_zone":    "Z3",
   "power_zone": "Z3",
-  "fatigue":    "medium"
+  "fatigue":    "medium",
+  "slope":      "flat",
+  "reward":     1.27
 }
 ```
 
-The subscriber will format and print each message like:
+Which is then rendered in the terminal as:
 
 ```
-💨 PUSH
-🕒 Second: 2:03
-🔄 KEEP GOING
-💓 HR Zone: Z3
-🏋️ Power Zone: Z3
-😴 Fatigue: MEDIUM
-----------------------------------------
+━━━━━━━━━━━━━━ 🕒 02:03 ━━━━━━━━━━━━━━
+🔥 Phase       : PUSH         🗻 Slope: flat
+🎯 Action      : KEEP GOING   💢 Fatigue: MEDIUM
+❤️ HR Zone    : Z3           ⚡ Power Zone: Z3
+🎁 Reward      : +1.27
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+### 5. Training Log Output
 
-### 5. Video of Simulation
-There are also animated videos that replay each training session. For every run, the runner’s GPS track is overlaid on an OpenStreetMap background and colored in real time to reflect the athlete’s **fatigue level**:
+Upon completion, a CSV file is saved in `training_logs/` with filename:
 
-- **Green** segments indicate low fatigue  
-- **Orange** segments indicate moderate fatigue  
-- **Red** segments indicate high fatigue  
+```
+<profile>_<training>_<circuit>_<YYYY-MM-DD>.csv
+```
 
-In each frame you’ll see:
-1. **The runner’s current position** (a red dot) moving along the path  
-2. **The colored trail behind** showing how fatigue evolved over time  
-3. **A status panel** with:
-   - Elapsed time (minutes:seconds)  
-   - Current workout phase (warmup, push, recover, cooldown)  
-   - Action taken (accelerate, keep going, slow down)  
-   - Heart-rate zone and power zone  
+Each row corresponds to one simulated second and includes:
+- Heart rate
+- Power
+- Action
+- Zone (HR & Power)
+- Fatigue level
+- Reward
+- Segment slope
+- Training phase
 
-These animations give an at-a-glance view of how the agent paces itself, where it pushes harder, and when recovery phases kick in.  
+### 6. Video of Simulation
 
-Videos can be found inside the video folder [here](https://github.com/Lorenzo-Gandini/smart-pacer/tree/main/data/video).
+Each session can be replayed as a video, showing the athlete’s GPS trace over OpenStreetMap with color-coded segments:
+
+- **Green** = low fatigue
+- **Orange** = moderate fatigue
+- **Red** = high fatigue
+
+The animation includes:
+1. **Moving dot** representing the runner’s position
+2. **Fatigue-colored trail** showing exertion level
+3. **On-screen status** with:
+   - Time elapsed
+   - Current phase (warmup, push, etc.)
+   - Action taken (accelerate, etc.)
+   - HR and Power zone
+
+Videos are stored under `data/video/`. Sample visualizations can be found [here](https://github.com/Lorenzo-Gandini/smart-pacer/tree/main/data/video).
