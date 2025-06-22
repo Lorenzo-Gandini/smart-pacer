@@ -179,15 +179,14 @@ Each row corresponds to one simulated second and includes:
 - Training phase
 
 ### 6. Video of Simulation
-
-Each session can be replayed as a video, showing the athlete’s GPS trace over OpenStreetMap with color-coded segments:
+All possible combinations of athlete, training program and circuit can also be seen as a video, showing the athlete’s GPS trace over OpenStreetMap with color-coded segments:
 
 - **Green** = low fatigue
 - **Orange** = moderate fatigue
 - **Red** = high fatigue
 
-The animation includes:
-1. **Moving dot** representing the runner’s position
+The animation shows:
+1. **Moving red dot** representing the runner’s position
 2. **Fatigue-colored trail** showing exertion level
 3. **On-screen status** with:
    - Time elapsed
