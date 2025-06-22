@@ -10,3 +10,7 @@ data/qtraining_runs_20250620_episodes500
 data/qtraining_runs_20250620_episodes1000
 data/qtraining_runs_20250620_episodes2000
 data/training_log_DEF_20062025
+data/wrong-q-tables
+data/video/wrong-videos
+data/500_episodi.zip
+data/1000_episodi.zip

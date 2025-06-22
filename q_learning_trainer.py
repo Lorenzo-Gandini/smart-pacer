@@ -11,22 +11,22 @@ from runner_env import RunnerEnv, load_json, ACTIONS
 from tqdm import tqdm
 
 # === CONFIG ===
-num_episodes = 500  # first block of experiments
-track = load_json("data/maps/acquedotti.json")  # single circuit only
+num_episodes = 2000  # first block of experiments
+track = load_json("data/maps/Parco acquedotti (Roma).json")  # single circuit only
 athletes = list(load_json("data/athletes.json").keys())
 training_plans = list(load_json("data/trainings.json").keys())
 
-# Hyperparameter sets for testing
-hyperparameter_sets = [
-    {"alpha": 0.1,  "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
-    {"alpha": 0.05, "gamma": 0.95, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
-    {"alpha": 0.1,  "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
-    {"alpha": 0.01, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
-    {"alpha": 0.1,  "gamma": 0.90, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
-    {"alpha": 0.1,  "gamma": 0.95, "initial_epsilon": 0.4, "min_epsilon": 0.01, "decay_rate": 0.97},
-    {"alpha": 0.05, "gamma": 0.99, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
-    {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.1, "min_epsilon": 0.01, "decay_rate": 0.98}
-]
+# Hyperparameter sets for 500 episode test
+# hyperparameter_sets = [
+#     {"alpha": 0.0,  "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
+#     {"alpha": 0.05, "gamma": 0.95, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
+#     {"alpha": 0.10,  "gamma": 0.99, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
+#     {"alpha": 0.01, "gamma": 0.95, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.99},
+#     {"alpha": 0.10,  "gamma": 0.90, "initial_epsilon": 0.2, "min_epsilon": 0.01, "decay_rate": 0.98},
+#     {"alpha": 0.10,  "gamma": 0.95, "initial_epsilon": 0.4, "min_epsilon": 0.01, "decay_rate": 0.97},
+#     {"alpha": 0.05, "gamma": 0.99, "initial_epsilon": 0.3, "min_epsilon": 0.01, "decay_rate": 0.995},
+#     {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.1, "min_epsilon": 0.01, "decay_rate": 0.98}
+# ]
 
 # hyperparameter_sets_1000 = [
 #     {"alpha": 0.05, "gamma": 0.90, "initial_epsilon": 0.10, "min_epsilon": 0.01, "decay_rate": 0.98}, 
@@ -35,9 +35,9 @@ hyperparameter_sets = [
 #     {"alpha": 0.05, "gamma": 0.95, "initial_epsilon": 0.30, "min_epsilon": 0.01, "decay_rate": 0.995}
 # ]
 
-# hyperparameter_sets = [
-#     {"alpha": 0.10, "gamma": 0.95, "initial_epsilon": 0.20, "min_epsilon": 0.01, "decay_rate": 0.99}
-# ]
+hyperparameter_sets = [
+    {"alpha": 0.10, "gamma": 0.95, "initial_epsilon": 0.20, "min_epsilon": 0.01, "decay_rate": 0.99}
+]
 
 # OUTPUT setup
 today = datetime.now().strftime("%Y%m%d")
